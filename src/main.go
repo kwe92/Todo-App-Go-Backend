@@ -95,9 +95,9 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentTypeHeader, MediaTypeJson)
 	var task Task
 	_ = json.NewDecoder(r.Body).Decode(&task)
-	// TODO: conver to a random number function
+	// TODO: convert to a random number function
 	task.ID = strconv.Itoa(rand.Intn(1000))
-	// if there is not enough elements in the fixed-length array a new array is created with all previous elements plus the added element
+
 	tasks = append(tasks, task)
 
 	json.NewEncoder(w).Encode(tasks)
@@ -202,3 +202,6 @@ func main() {
 
 //   - the createTask callback is passed a request object from the caller
 //     that contains the r.Body of the Post request
+
+// if there is not enough elements in the fixed-length array a new array is created with all previous elements plus the added element
+// tasks = append(tasks, task)
