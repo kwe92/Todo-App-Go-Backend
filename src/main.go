@@ -12,15 +12,10 @@ import (
 	"net/http"
 	"strconv"
 
+	types "example.com/declarations"
+
 	"github.com/gorilla/mux" // used to create a router
 )
-
-type Task struct {
-	ID          string `json:"id"`
-	TaskName    string `json:"taskName"`
-	TaskDetails string `json:"taskDetails"`
-	CreatedDate string `json:"createdDate"`
-}
 
 // Enumerated Types Go
 
@@ -33,17 +28,17 @@ const (
 	GetTaskEndPoint   = "/gettask/{id}"
 )
 
-var tasks []Task
+var tasks []types.Task
 
 func allTasks() {
-	task0 := Task{
+	task0 := types.Task{
 		ID:          "1001",
 		TaskName:    "Complete What You Start",
 		TaskDetails: "If you start it, finish it by the continuous beginning of the task set before you.",
 		CreatedDate: "2023-08-15",
 	}
 
-	task1 := Task{
+	task1 := types.Task{
 		ID:          "1002",
 		TaskName:    "Work On Pay Off!",
 		TaskDetails: "It pays to payoff, so payoff as you pay",
@@ -93,7 +88,7 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 
 func createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-	var task Task
+	var task types.Task
 	_ = json.NewDecoder(r.Body).Decode(&task)
 	// TODO: convert to a random number function
 	task.ID = strconv.Itoa(rand.Intn(1000))
