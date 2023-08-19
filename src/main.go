@@ -8,7 +8,9 @@ import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
 	"fmt"           // used to format text
 	"log"
+	"math/rand" // the Go math package from the standard library
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux" // used to create a router
 )
@@ -19,6 +21,17 @@ type Task struct {
 	TaskDetails string `json:"taskDetails"`
 	CreatedDate string `json:"createdDate"`
 }
+
+// Enumerated Types Go
+
+// - there are no default enums in Go
+// - you can define a set of constant values and use them throughout your Go application
+
+const (
+	ContentTypeHeader = "Content-Type"
+	MediaTypeJson     = "application/json"
+	GetTaskEndPoint   = "/gettask/{id}"
+)
 
 var tasks []Task
 
@@ -48,8 +61,9 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func gettasks(w http.ResponseWriter, r *http.Request) {
 
 	// HTTP Header setup
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(ContentTypeHeader, MediaTypeJson)
 
+	// returns json data back to the client
 	json.NewEncoder(w).Encode(tasks)
 
 }
@@ -76,18 +90,31 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
 func createTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(ContentTypeHeader, MediaTypeJson)
+	var task Task
+	_ = json.NewDecoder(r.Body).Decode(&task)
+	// TODO: conver to a random number function
+	task.ID = strconv.Itoa(rand.Intn(1000))
+	// if there is not enough elements in the fixed-length array a new array is created with all previous elements plus the added element
+	tasks = append(tasks, task)
+
+	json.NewEncoder(w).Encode(tasks)
+
 }
 func updateTask(w http.ResponseWriter, r *http.Request) {}
 func deleteTask(w http.ResponseWriter, r *http.Request) {}
 
+// handleRoutes handles all the routes for this API.
 func handleRoutes() {
+	// router instance
 	router := mux.NewRouter()
-	// endpoints
+	// all API endpoints
 	// TODO: Review all http method types
 	router.HandleFunc("/", homePage).Methods("GET")
 	router.HandleFunc("/gettasks", gettasks).Methods("GET")
-	router.HandleFunc("/gettask/{id}", gettask).Methods("GET")
+	router.HandleFunc(GetTaskEndPoint, gettask).Methods("GET")
 	router.HandleFunc("/create", createTask).Methods("POST")
 	router.HandleFunc("/update/{id}", updateTask).Methods("PUT")
 	router.HandleFunc("/delete/{id}", deleteTask).Methods("DELETE")
@@ -109,23 +136,47 @@ func main() {
 
 // TODO: cleanup comments
 
-// type wr in the function header and it will auto-complete what you need as parameters for the callback
+// w http.ResponseWriter, r *http.Request
 
-//   - func homePage(w http.ResponseWriter, r *http.Request)
+//   - required parameters for the callback passed to router.HandleFunc
+//     to handle http requests and responses
 
-//     - r *http.Request
+//   - type wr to auto-complete callback parameters
 
-//         - used to retrieve query parameters and post request data
+//   - e.g. func homePage(w http.ResponseWriter, r *http.Request)
 
-//     - w http.ResponseWriter
+//   ~ r *http.Request
 
-//		 - writes a response to the caller
+//       + used to retrieve query parameters and post request data
+
+//   ~  r.Body
+
+//        + the body of the Post request sent by the caller `client`
+
+//        + json.NewDecoder(r.Body).Decode(&task)
+
+//            * the request body sent by the client is decoded and
+//              stored in memory using a pointer by reference to a defined variable
+
+//            * underscore (_) is used because we are using a reference in memory not a value
+
+//   ~ w http.ResponseWriter
+
+//       + writes a response to the caller
+
+//       + json.NewEncoder(w).Encode(tasks)
+
+//           * returns json response back to the client
+//           * does not require a return statement
 
 // handleRoutes function
 
 //   - use the router to create some route
+
 //   - "/" represents the home page
+
 //   - similar to larvel or node.js
+
 //   - three things you need: route name, route function and route method
 
 // HTTP Header setup
@@ -142,5 +193,12 @@ func main() {
 // pinging local host
 
 //   - you can ping local host with Postman desktop client
-//   - you can use localhost or 127.0.0.1 as a prefix to the port you specified
-//       - e.g. localhost:8082/gettasks or 127.0.0.1:8082/gettasks
+
+//   ~ you can use localhost or 127.0.0.1 as a prefix to the port you specified
+
+//       + e.g. localhost:8082/gettasks or 127.0.0.1:8082/gettasks
+
+// What Happens when :router.HandleFunc("/create", createTask).Methods("POST") is called?
+
+//   - the createTask callback is passed a request object from the caller
+//     that contains the r.Body of the Post request
