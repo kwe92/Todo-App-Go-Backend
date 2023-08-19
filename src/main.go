@@ -1,8 +1,10 @@
 package main
 
 // TODO: separate into diffrent packages | structures etc when you know how to have a multi module workspace
+
 // TODO: remove hard coded strings and use enums
-//
+
+// TODO: convert to a random number function
 
 import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
@@ -90,11 +92,13 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentTypeHeader, MediaTypeJson)
 	var task types.Task
 	_ = json.NewDecoder(r.Body).Decode(&task)
-	// TODO: convert to a random number function
+	// a task id for a task sent by the client
 	task.ID = strconv.Itoa(rand.Intn(1000))
 
+	// append client side task to server side task array
 	tasks = append(tasks, task)
 
+	// send the new task array as a response
 	json.NewEncoder(w).Encode(tasks)
 
 }
