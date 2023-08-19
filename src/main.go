@@ -1,5 +1,9 @@
 package main
 
+// TODO: separate into diffrent packages | structures etc when you know how to have a multi module workspace
+// TODO: remove hard coded strings and use enums
+//
+
 import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
 	"fmt"           // used to format text
@@ -72,13 +76,15 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func createTask(w http.ResponseWriter, r *http.Request) {}
+func createTask(w http.ResponseWriter, r *http.Request) {
+}
 func updateTask(w http.ResponseWriter, r *http.Request) {}
 func deleteTask(w http.ResponseWriter, r *http.Request) {}
 
 func handleRoutes() {
 	router := mux.NewRouter()
 	// endpoints
+	// TODO: Review all http method types
 	router.HandleFunc("/", homePage).Methods("GET")
 	router.HandleFunc("/gettasks", gettasks).Methods("GET")
 	router.HandleFunc("/gettask/{id}", gettask).Methods("GET")
@@ -107,6 +113,14 @@ func main() {
 
 //   - func homePage(w http.ResponseWriter, r *http.Request)
 
+//     - r *http.Request
+
+//         - used to retrieve query parameters and post request data
+
+//     - w http.ResponseWriter
+
+//		 - writes a response to the caller
+
 // handleRoutes function
 
 //   - use the router to create some route
@@ -115,7 +129,9 @@ func main() {
 //   - three things you need: route name, route function and route method
 
 // HTTP Header setup
+
 // TODO: review Content-Type an what can suffix application/ | e.g. application/json
+
 //   - w.Header().Set("Content-Type", "application/json")
 
 // mux.Vars(r)
