@@ -6,6 +6,8 @@ package main
 
 // TODO: convert to a random number function
 
+// TODO: add logs
+
 import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
 	"fmt"           // used to format text
@@ -19,11 +21,7 @@ import (
 	"github.com/gorilla/mux" // used to create a router
 )
 
-// Enumerated Types Go
-
-// - there are no default enums in Go
-// - you can define a set of constant values and use them throughout your Go application
-
+// Pseudo Enum
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
@@ -204,3 +202,8 @@ func main() {
 
 // if there is not enough elements in the fixed-length array a new array is created with all previous elements plus the added element
 // tasks = append(tasks, task)
+
+// Enumerated Types Go
+
+//   - there are no default enums in Go
+//   - you can define a set of constant values and use them throughout your Go application
