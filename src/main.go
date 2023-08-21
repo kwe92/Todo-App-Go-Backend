@@ -6,6 +6,8 @@ package main
 
 // TODO: convert to a random number function
 
+// TODO: add logs
+
 import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
 	"fmt"           // used to format text
@@ -19,15 +21,11 @@ import (
 	"github.com/gorilla/mux" // used to create a router
 )
 
-// Enumerated Types Go
-
-// - there are no default enums in Go
-// - you can define a set of constant values and use them throughout your Go application
-
+// Pseudo Enum
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
-	GetTaskEndPoint   = "/gettask/{id}"
+	getTask           = "/gettask/{id}"
 )
 
 var tasks []types.Task
@@ -113,7 +111,7 @@ func handleRoutes() {
 	// TODO: Review all http method types
 	router.HandleFunc("/", homePage).Methods("GET")
 	router.HandleFunc("/gettasks", gettasks).Methods("GET")
-	router.HandleFunc(GetTaskEndPoint, gettask).Methods("GET")
+	router.HandleFunc(getTask, gettask).Methods("GET")
 	router.HandleFunc("/create", createTask).Methods("POST")
 	router.HandleFunc("/update/{id}", updateTask).Methods("PUT")
 	router.HandleFunc("/delete/{id}", deleteTask).Methods("DELETE")
@@ -204,3 +202,8 @@ func main() {
 
 // if there is not enough elements in the fixed-length array a new array is created with all previous elements plus the added element
 // tasks = append(tasks, task)
+
+// Enumerated Types Go
+
+//   - there are no default enums in Go
+//   - you can define a set of constant values and use them throughout your Go application
