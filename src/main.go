@@ -25,7 +25,7 @@ import (
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
-	GetTaskEndPoint   = "/gettask/{id}"
+	getTask           = "/gettask/{id}"
 )
 
 var tasks []types.Task
@@ -111,7 +111,7 @@ func handleRoutes() {
 	// TODO: Review all http method types
 	router.HandleFunc("/", homePage).Methods("GET")
 	router.HandleFunc("/gettasks", gettasks).Methods("GET")
-	router.HandleFunc(GetTaskEndPoint, gettask).Methods("GET")
+	router.HandleFunc(getTask, gettask).Methods("GET")
 	router.HandleFunc("/create", createTask).Methods("POST")
 	router.HandleFunc("/update/{id}", updateTask).Methods("PUT")
 	router.HandleFunc("/delete/{id}", deleteTask).Methods("DELETE")
