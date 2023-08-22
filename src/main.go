@@ -102,7 +102,9 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 
 	if flag == false {
 		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
+
 		// if there is no matching id send a json error hashmap to the client as a response
+
 		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", params["id"])})
 	}
 
@@ -116,11 +118,11 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 	var newTask types.Task
 
-	// decode the request from the client
+	// decode the request recieved from the client
 
 	json.NewDecoder(r.Body).Decode(&newTask)
 
-	// a task id for a task sent by the client
+	// assign new task an id
 
 	newTask.ID = strconv.Itoa(rand.Intn(1000))
 
@@ -129,17 +131,19 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 	newTask.CreatedDate = currentTime
 
-	// append client side task to server side task array
+	// append recieved decoded task to tasks Slice
 
 	tasks = append(tasks, newTask)
 
-	// send the new task array as a response
+	// send the new task Slice as a response
 
 	json.NewEncoder(w).Encode(tasks)
 
 }
 
 //! ---------------- UPDATED TASK ROUTE HANDLER ----------------//
+
+// TODO: use hashmap instead for constant time O(1) opperations instead of a linear O(n) for loop | a database would be even better
 
 func updateTask(w http.ResponseWriter, r *http.Request) {
 
@@ -159,16 +163,24 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 			json.NewDecoder(r.Body).Decode(&updatedTask)
 
+			fmt.Printf("\nupdated task: %v", updatedTask)
+
 			// TODO: replace with a utility function | DON'T REPEAT YOURSELF
 			currentTime := time.Now().Format("01-02-2006")
 
 			updatedTask.CreatedDate = currentTime
 
+			fmt.Printf("\nupdated task: %v", updatedTask)
+
 			tasks = append(tasks, updatedTask)
+
+			fmt.Printf("\ntasks with appended updatedTask: %v", tasks)
 
 			json.NewEncoder(w).Encode(tasks)
 
 			isPresent = true
+
+			break
 
 		}
 
