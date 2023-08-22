@@ -15,6 +15,7 @@ import (
 	"math/rand" // the Go math package from the standard library
 	"net/http"
 	"strconv"
+	"time"
 
 	types "example.com/declarations"
 
@@ -87,11 +88,17 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 }
 
 func createTask(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set(ContentTypeHeader, MediaTypeJson)
+
 	var task types.Task
+
 	_ = json.NewDecoder(r.Body).Decode(&task)
+
 	// a task id for a task sent by the client
 	task.ID = strconv.Itoa(rand.Intn(1000))
+	currentTime := time.Now().Format("01-02-2006")
+	task.CreatedDate = currentTime
 
 	// append client side task to server side task array
 	tasks = append(tasks, task)
@@ -100,7 +107,9 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tasks)
 
 }
-func updateTask(w http.ResponseWriter, r *http.Request) {}
+func updateTask(w http.ResponseWriter, r *http.Request) {
+
+}
 func deleteTask(w http.ResponseWriter, r *http.Request) {}
 
 // handleRoutes handles all the routes for this API.
