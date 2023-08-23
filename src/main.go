@@ -84,23 +84,22 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 	// parameters recieved with client request
 	params := mux.Vars(r)
 
-	flag := false
+	isPresent := false
 
 	fmt.Printf("\nmux.Vars(r) value:\n\n%v\n", params)
 
 	for i := 0; i < len(tasks); i++ {
 
 		if params["id"] == tasks[i].ID {
+			isPresent = true
 
 			json.NewEncoder(w).Encode(tasks[i])
-
-			flag = true
 
 			break
 		}
 	}
 
-	if flag == false {
+	if isPresent == false {
 		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
 
 		// if there is no matching id send a json error hashmap to the client as a response
@@ -156,6 +155,7 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 	for index, task := range tasks {
 
 		if task.ID == params["id"] {
+			isPresent = true
 
 			tasks = append(tasks[:index], tasks[index+1:]...)
 
@@ -163,22 +163,18 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 			json.NewDecoder(r.Body).Decode(&updatedTask)
 
-			fmt.Printf("\nupdated task: %v", updatedTask)
+			fmt.Printf("\n\nupdated task: %v", updatedTask)
 
 			// TODO: replace with a utility function | DON'T REPEAT YOURSELF
 			currentTime := time.Now().Format("01-02-2006")
 
 			updatedTask.CreatedDate = currentTime
 
-			fmt.Printf("\nupdated task: %v", updatedTask)
-
 			tasks = append(tasks, updatedTask)
 
-			fmt.Printf("\ntasks with appended updatedTask: %v", tasks)
+			fmt.Printf("\n\ntasks with appended updatedTask: %v", tasks)
 
 			json.NewEncoder(w).Encode(tasks)
-
-			isPresent = true
 
 			break
 
@@ -188,14 +184,32 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 	if isPresent == false {
 		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", params["id"])})
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist.", params["id"])})
 	}
 
 }
 
 //! ---------------- DELETE TASK ROUTE HANDLER ----------------//
 
-func deleteTask(w http.ResponseWriter, r *http.Request) {}
+func deleteTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(ContentTypeHeader, MediaTypeJson)
+	params := mux.Vars(r)
+	isPresent := false
+
+	for index, task := range tasks {
+		if params["id"] == task.ID {
+			isPresent = true
+			tasks = append(tasks[:index], tasks[index+1:]...)
+			fmt.Printf("\n\ntask deleted: \n\n%v", task)
+			json.NewEncoder(w).Encode(tasks)
+			break
+		}
+	}
+
+	if isPresent == false {
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there is no task with the id: %v.", params["id"])})
+	}
+}
 
 //! ----------------  HANDLE ALL ROUTES ----------------//
 
@@ -234,7 +248,7 @@ func main() {
 
 	allTasks()
 
-	fmt.Println("\nServer has started successfully!\n")
+	fmt.Printf("\nServer has started successfully!\n")
 
 	handleRoutes()
 
