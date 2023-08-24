@@ -25,10 +25,18 @@ import (
 //! ----------------  CONSTANTS ----------------//
 
 // Pseudo Enum
+
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
-	GetTask           = "/gettask/{id}"
+)
+
+const (
+	GetTask    = "/gettask/{id}"
+	GetTasks   = "/gettasks"
+	CreateTask = "/create"
+	UpdateTask = "/update/{id}"
+	DeleteTask = "/delete/{id}"
 )
 
 //! ----------------  INITIAL TASKS ----------------//
@@ -227,15 +235,15 @@ func handleRoutes() {
 
 	router.HandleFunc("/", homePage).Methods("GET")
 
-	router.HandleFunc("/gettasks", gettasks).Methods("GET")
+	router.HandleFunc(GetTasks, gettasks).Methods("GET")
 
 	router.HandleFunc(GetTask, gettask).Methods("GET")
 
-	router.HandleFunc("/create", createTask).Methods("POST")
+	router.HandleFunc(CreateTask, createTask).Methods("POST")
 
-	router.HandleFunc("/update/{id}", updateTask).Methods("PUT")
+	router.HandleFunc(UpdateTask, updateTask).Methods("PUT")
 
-	router.HandleFunc("/delete/{id}", deleteTask).Methods("DELETE")
+	router.HandleFunc(DeleteTask, deleteTask).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
 }
