@@ -2,11 +2,9 @@ package main
 
 // TODO: separate into diffrent packages | structures etc when you know how to have a multi module workspace
 
-// TODO: remove hard coded strings and use enums
-
 // TODO: convert to a random number function
 
-// TODO: add logs
+// TODO: add better logs
 
 import (
 	"encoding/json" // needed to encode json data and send it back to the requesting application
@@ -203,6 +201,8 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentTypeHeader, MediaTypeJson)
 	params := mux.Vars(r)
 	isPresent := false
+
+	// O(N) --> O(1) ? Arrays to HashMaps for lookup operations
 
 	for index, task := range tasks {
 		if params["id"] == task.ID {
