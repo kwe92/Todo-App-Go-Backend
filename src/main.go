@@ -77,6 +77,8 @@ func gettasks(w http.ResponseWriter, r *http.Request) {
 	// returns json data back to the client
 	json.NewEncoder(w).Encode(tasks)
 
+	fmt.Printf("\n\nTasks sent to client:\n\n%v", tasks)
+
 }
 
 //! ---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
@@ -92,7 +94,7 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 
 	isPresent := false
 
-	fmt.Printf("\nmux.Vars(r) value:\n\n%v\n", params)
+	fmt.Printf("\nmux.Vars(r) value:\n\n%v", params)
 
 	for i := 0; i < len(tasks); i++ {
 
@@ -101,16 +103,22 @@ func gettask(w http.ResponseWriter, r *http.Request) {
 
 			json.NewEncoder(w).Encode(tasks[i])
 
+			fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", params["id"], tasks[i])
+
 			break
 		}
 	}
 
 	if isPresent == false {
+
+		fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", params["id"])
+
 		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
 
 		// if there is no matching id send a json error hashmap to the client as a response
 
 		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", params["id"])})
+
 	}
 
 }
@@ -144,6 +152,8 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(tasks)
 
+	fmt.Printf("\n\nNew task created: \n\n%v", newTask)
+
 }
 
 //! ---------------- UPDATED TASK ROUTE HANDLER ----------------//
@@ -169,9 +179,8 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 			json.NewDecoder(r.Body).Decode(&updatedTask)
 
-			fmt.Printf("\n\nupdated task: %v", updatedTask)
-
 			// TODO: replace with a utility function | DON'T REPEAT YOURSELF
+
 			currentTime := time.Now().Format("01-02-2006")
 
 			updatedTask.CreatedDate = currentTime
@@ -181,6 +190,8 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("\n\ntasks with appended updatedTask: %v", tasks)
 
 			json.NewEncoder(w).Encode(tasks)
+
+			fmt.Printf("\n\nUpdated task: %v", updatedTask)
 
 			break
 
@@ -205,17 +216,25 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 	// O(N) --> O(1) ? Arrays to HashMaps for lookup operations
 
 	for index, task := range tasks {
+
 		if params["id"] == task.ID {
+
 			isPresent = true
+
 			tasks = append(tasks[:index], tasks[index+1:]...)
-			fmt.Printf("\n\ntask deleted: \n\n%v", task)
+
 			json.NewEncoder(w).Encode(tasks)
+
+			fmt.Printf("\n\ntask deleted: \n\n%v", task)
+
 			break
 		}
 	}
 
 	if isPresent == false {
+
 		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there is no task with the id: %v.", params["id"])})
+
 	}
 }
 
