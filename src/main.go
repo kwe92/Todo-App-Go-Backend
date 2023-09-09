@@ -58,14 +58,14 @@ func allTasks() {
 		CreatedDate: "2023-08-15",
 	}
 
-	// task2 := types.Task{
-	// 	ID:          "1003",
-	// 	TaskName:    "In God We Find Strength!",
-	// 	TaskDetails: "But they that wait upon the Lord shall renew their strength;",
-	// 	CreatedDate: "2023-09-04",
-	// }
+	task2 := types.Task{
+		ID:          "1003",
+		TaskName:    "In God We Find Strength!",
+		TaskDetails: "But they that wait upon the Lord shall renew their strength;",
+		CreatedDate: "2023-09-04",
+	}
 
-	tasks = append(tasks, task0, task1)
+	tasks = append(tasks, task0, task1, task2)
 }
 
 //! ---------------- HOME PAGE ROUTE HANDLER ----------------//
