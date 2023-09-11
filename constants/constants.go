@@ -1,18 +1,10 @@
 package constants
 
-type HeaderMetaData struct {
-	ContentTypeHeader string
-	MediaTypeJson     string
-}
+import (
+	types "example.com/declarations"
+)
 
-type EndPoints struct {
-	GetTask    string
-	GetTasks   string
-	CreateTask string
-	UpdateTask string
-	DeleteTask string
-}
-
+// Pseudo Enum
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
@@ -26,19 +18,21 @@ const (
 	DeleteTask = "/delete/{id}"
 )
 
-func AppConstants() (HeaderMetaData, EndPoints) {
-	headerMetaData := HeaderMetaData{
-		ContentTypeHeader: "Content-Type",
-		MediaTypeJson:     "application/json",
+// HeaderData returns header meta data constants in a struct.
+func HeaderData() types.HeaderMetaData {
+	return types.HeaderMetaData{
+		ContentTypeHeader: ContentTypeHeader,
+		MediaTypeJson:     MediaTypeJson,
 	}
+}
 
-	endPoints := EndPoints{
-		GetTask:    "/gettask/{id}",
-		GetTasks:   "/gettasks",
-		CreateTask: "/create",
-		UpdateTask: "/update/{id}",
-		DeleteTask: "/delete/{id}",
+// Endpoints returns endpoint constants in a struct.
+func Endpoints() types.EndPoints {
+	return types.EndPoints{
+		GetTask:    GetTask,
+		GetTasks:   GetTasks,
+		CreateTask: CreateTask,
+		UpdateTask: UpdateTask,
+		DeleteTask: DeleteTask,
 	}
-
-	return headerMetaData, endPoints
 }
