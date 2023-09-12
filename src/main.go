@@ -1,17 +1,13 @@
 package main
 
-// TODO: Try using Pointers instead of passing the list by value
-
 // TODO: convert to a random number function
 
 // TODO: add better logs
 
-// TODO: Retrive from a database
-
 import (
-	"constants" // needed to encode json data and send it back to the requesting application
-	"fmt"       // used to format text
-	"log"       // the Go math package from the standard library
+	"constants"
+	"fmt"
+	"log"
 	"net/http"
 	"routehandlers"
 
@@ -19,31 +15,20 @@ import (
 	"github.com/gorilla/mux" // used to create a router
 )
 
-//?----------------  INITIAL TASKS ----------------?//
+//?----------------  ENDPOINTS ----------------?//
 
 var endpoints = constants.Endpoints()
 
-// var tasks = make([]types.Task, 0)
+//?----------------  INITIAL TASKS ----------------?//
 
 var tasks []types.Task
 
-func defaultTasks() {
+func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
 
-	task0 := types.Task{
-		ID:          "1001",
-		TaskName:    "Create Your First Task",
-		TaskDetails: "One task at a time!",
+	for _, task := range defaultTasks {
+		*tasks = append(*tasks, task)
 	}
 
-	tasks = append(tasks, task0)
-
-}
-
-//?---------------- HOME PAGE ROUTE HANDLER ----------------?//
-
-func homePage(tasks []types.Task) types.RouteHandlerFunc {
-	fmt.Println("I am the home page!")
-	return func(w http.ResponseWriter, r *http.Request) {}
 }
 
 //?----------------  HANDLE ALL ROUTES ----------------?//
@@ -55,25 +40,35 @@ func handleRoutes() {
 	router := mux.NewRouter()
 
 	// all API endpoints
-	router.HandleFunc("/", homePage(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.Home, routehandlers.HomePage(&tasks)).Methods("GET")
 
-	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(&tasks)).Methods("GET")
 
-	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(&tasks)).Methods("GET")
 
-	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(tasks)).Methods("POST")
+	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(&tasks)).Methods("POST")
 
-	router.HandleFunc(endpoints.UpdateTask, routehandlers.CreateTask(tasks)).Methods("PUT")
+	router.HandleFunc(endpoints.UpdateTask, routehandlers.UpdateTask(&tasks)).Methods("PUT")
 
-	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(tasks)).Methods("DELETE")
+	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(&tasks)).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
+}
+
+func init() {
+	var task0 = types.Task{
+		ID:          "1001",
+		TaskName:    "Create Your First Task",
+		TaskDetails: "One task at a time!",
+	}
+	// assign inital tasks
+	defaultTasks(&tasks, []types.Task{task0})
+
 }
 
 //?----------------  MAIN FUNCTION ----------------?//
 
 func main() {
-	defaultTasks()
 
 	fmt.Printf("\nServer has started successfully!\n")
 
