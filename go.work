@@ -7,3 +7,5 @@ use ./declarations
 use ./constants
 
 use ./route_handlers
+
+use ./router
