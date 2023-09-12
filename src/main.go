@@ -1,292 +1,45 @@
 package main
 
-// TODO: separate into diffrent packages | structures etc when you know how to have a multi module workspace
-
-// TODO: convert to a random number function
-
 // TODO: add better logs
 
-// TODO: Retrive from a database
-
 import (
-	"encoding/json" // needed to encode json data and send it back to the requesting application
-	"fmt"           // used to format text
-	"log"
-	"math/rand" // the Go math package from the standard library
-	"net/http"
-	"strconv"
-	"time"
+	"app_router"
+	"fmt"
 
 	types "example.com/declarations"
-
-	"github.com/gorilla/mux" // used to create a router
 )
 
-//! ----------------  CONSTANTS ----------------//
-
-// Pseudo Enum
-
-const (
-	ContentTypeHeader = "Content-Type"
-	MediaTypeJson     = "application/json"
-)
-
-const (
-	GetTask    = "/gettask/{id}"
-	GetTasks   = "/gettasks"
-	CreateTask = "/create"
-	UpdateTask = "/update/{id}"
-	DeleteTask = "/delete/{id}"
-)
-
-//! ----------------  INITIAL TASKS ----------------//
+//?----------------  INITIAL TASKS ----------------?//
 
 var tasks []types.Task
 
-func allTasks() {
-	task0 := types.Task{
+// defaultTasks assigns intial tasks.
+func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
+
+	for _, task := range defaultTasks {
+		*tasks = append(*tasks, task)
+	}
+
+}
+
+func init() {
+	var task0 = types.Task{
 		ID:          "1001",
-		TaskName:    "Complete What You Start",
-		TaskDetails: "If you start it, finish it by the continuous beginning of the task set before you.",
-		CreatedDate: "2023-08-15",
+		TaskName:    "Create Your First Task",
+		TaskDetails: "One task at a time!",
 	}
-
-	task1 := types.Task{
-		ID:          "1002",
-		TaskName:    "Work On Pay Off!",
-		TaskDetails: "It pays to payoff, so payoff as you pay",
-		CreatedDate: "2023-08-15",
-	}
-
-	task2 := types.Task{
-		ID:          "1003",
-		TaskName:    "In God We Find Strength!",
-		TaskDetails: "But they that wait upon the Lord shall renew their strength;",
-		CreatedDate: "2023-09-04",
-	}
-
-	tasks = append(tasks, task0, task1, task2)
-}
-
-//! ---------------- HOME PAGE ROUTE HANDLER ----------------//
-
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("I am the home page!")
-}
-
-//! ---------------- GET ALL TASKS ROUTE HANDLER ----------------//
-
-// a callback that returns a json encoded response to the requesting application.
-
-func gettasks(w http.ResponseWriter, r *http.Request) {
-
-	// HTTP Header setup
-	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-
-	// returns json data back to the client
-	json.NewEncoder(w).Encode(tasks)
-
-	fmt.Printf("\n\nTasks sent to client:\n\n%v", tasks)
+	// assign inital tasks.
+	defaultTasks(&tasks, []types.Task{task0})
 
 }
 
-//! ---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
-
-// a callback that returns a json encoded response to the requesting application.
-
-func gettask(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-
-	// parameters recieved with client request
-	params := mux.Vars(r)
-
-	isPresent := false
-
-	fmt.Printf("\nmux.Vars(r) value:\n\n%v", params)
-
-	for i := 0; i < len(tasks); i++ {
-
-		if params["id"] == tasks[i].ID {
-			isPresent = true
-
-			json.NewEncoder(w).Encode(tasks[i])
-
-			fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", params["id"], tasks[i])
-
-			break
-		}
-	}
-
-	if isPresent == false {
-
-		fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", params["id"])
-
-		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-
-		// if there is no matching id send a json error hashmap to the client as a response
-
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", params["id"])})
-
-	}
-
-}
-
-//! ---------------- CREATED TASK ROUTE HANDLER ----------------//
-
-func createTask(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-
-	var newTask types.Task
-
-	// decode the request recieved from the client
-
-	json.NewDecoder(r.Body).Decode(&newTask)
-
-	// assign new task an id
-
-	newTask.ID = strconv.Itoa(rand.Intn(1000))
-
-	// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-	currentTime := time.Now().Format("01-02-2006")
-
-	newTask.CreatedDate = currentTime
-
-	// append recieved decoded task to tasks Slice
-
-	tasks = append(tasks, newTask)
-
-	// send the new task Slice as a response
-
-	json.NewEncoder(w).Encode(tasks)
-
-	fmt.Printf("\n\nNew task created: \n\n%v", newTask)
-
-}
-
-//! ---------------- UPDATED TASK ROUTE HANDLER ----------------//
-
-// TODO: use hashmap instead for constant time O(1) opperations instead of a linear O(n) for loop | a database would be even better
-
-func updateTask(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-
-	params := mux.Vars(r)
-
-	isPresent := false
-
-	for index, task := range tasks {
-
-		if task.ID == params["id"] {
-			isPresent = true
-
-			tasks = append(tasks[:index], tasks[index+1:]...)
-
-			var updatedTask types.Task
-
-			json.NewDecoder(r.Body).Decode(&updatedTask)
-
-			// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-
-			currentTime := time.Now().Format("01-02-2006")
-
-			updatedTask.CreatedDate = currentTime
-
-			tasks = append(tasks, updatedTask)
-
-			fmt.Printf("\n\ntasks with appended updatedTask: %v", tasks)
-
-			json.NewEncoder(w).Encode(tasks)
-
-			fmt.Printf("\n\nUpdated task: %v", updatedTask)
-
-			break
-
-		}
-
-	}
-
-	if isPresent == false {
-		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist.", params["id"])})
-	}
-
-}
-
-//! ---------------- DELETE TASK ROUTE HANDLER ----------------//
-
-func deleteTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(ContentTypeHeader, MediaTypeJson)
-	params := mux.Vars(r)
-	isPresent := false
-
-	// O(N) --> O(1) ? Arrays to HashMaps for lookup operations
-
-	for index, task := range tasks {
-
-		if params["id"] == task.ID {
-
-			isPresent = true
-
-			tasks = append(tasks[:index], tasks[index+1:]...)
-
-			json.NewEncoder(w).Encode(tasks)
-
-			fmt.Printf("\n\ntask deleted: \n\n%v", task)
-
-			break
-		}
-	}
-
-	if isPresent == false {
-
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there is no task with the id: %v.", params["id"])})
-
-	}
-}
-
-//! ----------------  HANDLE ALL ROUTES ----------------//
-
-// handleRoutes handles all the routes for this API.
-
-func handleRoutes() {
-
-	// router instance
-
-	router := mux.NewRouter()
-
-	// all API endpoints
-
-	// TODO: Review all http method types
-
-	router.HandleFunc("/", homePage).Methods("GET")
-
-	router.HandleFunc(GetTasks, gettasks).Methods("GET")
-
-	router.HandleFunc(GetTask, gettask).Methods("GET")
-
-	router.HandleFunc(CreateTask, createTask).Methods("POST")
-
-	router.HandleFunc(UpdateTask, updateTask).Methods("PUT")
-
-	router.HandleFunc(DeleteTask, deleteTask).Methods("DELETE")
-
-	log.Fatal(http.ListenAndServe(":8082", router))
-}
-
-//! ----------------  MAIN FUNCTION ----------------//
+//?----------------  MAIN FUNCTION ----------------?//
 
 func main() {
 
-	// setup initial tasks
-
-	allTasks()
-
 	fmt.Printf("\nServer has started successfully!\n")
 
-	handleRoutes()
+	app_router.HandleRoutes(&tasks)
 
 }
 
