@@ -1,28 +1,19 @@
 package main
 
-// TODO: convert to a random number function
-
 // TODO: add better logs
 
 import (
-	"constants"
+	"app_router"
 	"fmt"
-	"log"
-	"net/http"
-	"routehandlers"
 
 	types "example.com/declarations"
-	"github.com/gorilla/mux" // used to create a router
 )
-
-//?----------------  ENDPOINTS ----------------?//
-
-var endpoints = constants.Endpoints()
 
 //?----------------  INITIAL TASKS ----------------?//
 
 var tasks []types.Task
 
+// defaultTasks assigns intial tasks.
 func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
 
 	for _, task := range defaultTasks {
@@ -31,37 +22,13 @@ func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
 
 }
 
-//?----------------  HANDLE ALL ROUTES ----------------?//
-
-// handleRoutes handles all the routes for this API.
-func handleRoutes() {
-
-	// router instance
-	router := mux.NewRouter()
-
-	// all API endpoints
-	router.HandleFunc(endpoints.Home, routehandlers.HomePage(&tasks)).Methods("GET")
-
-	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(&tasks)).Methods("GET")
-
-	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(&tasks)).Methods("GET")
-
-	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(&tasks)).Methods("POST")
-
-	router.HandleFunc(endpoints.UpdateTask, routehandlers.UpdateTask(&tasks)).Methods("PUT")
-
-	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(&tasks)).Methods("DELETE")
-
-	log.Fatal(http.ListenAndServe(":8082", router))
-}
-
 func init() {
 	var task0 = types.Task{
 		ID:          "1001",
 		TaskName:    "Create Your First Task",
 		TaskDetails: "One task at a time!",
 	}
-	// assign inital tasks
+	// assign inital tasks.
 	defaultTasks(&tasks, []types.Task{task0})
 
 }
@@ -72,7 +39,7 @@ func main() {
 
 	fmt.Printf("\nServer has started successfully!\n")
 
-	handleRoutes()
+	app_router.HandleRoutes(&tasks)
 
 }
 
