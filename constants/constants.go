@@ -11,6 +11,7 @@ const (
 )
 
 const (
+	Home       = "/"
 	GetTask    = "/gettask/{id}"
 	GetTasks   = "/gettasks"
 	CreateTask = "/create"
@@ -29,6 +30,7 @@ func HeaderData() types.HeaderMetaData {
 // Endpoints returns endpoint constants in a struct.
 func Endpoints() types.EndPoints {
 	return types.EndPoints{
+		Home:       Home,
 		GetTask:    GetTask,
 		GetTasks:   GetTasks,
 		CreateTask: CreateTask,
