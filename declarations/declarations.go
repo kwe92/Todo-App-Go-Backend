@@ -15,6 +15,7 @@ type HeaderMetaData struct {
 }
 
 type EndPoints struct {
+	Home       string
 	GetTask    string
 	GetTasks   string
 	CreateTask string
