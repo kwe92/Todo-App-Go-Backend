@@ -13,21 +13,29 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// metaData represents meta data constants in a struct.
 var metaData = constants.HeaderData()
+
+//?---------------- HOME PAGE ROUTE HANDLER ----------------?//
+
+func HomePage(tasks *[]types.Task) types.RouteHandlerFunc {
+	fmt.Println("I am the home page!")
+	return func(w http.ResponseWriter, r *http.Request) {}
+}
 
 //?---------------- GET ALL TASKSROUTE HANDLER ----------------?//
 
 // GetTasks returns a callback that returns a json encoded response to the requesting application.
-func GetTasks(tasks []types.Task) types.RouteHandlerFunc {
+func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// HTTP Header setup
 		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
 
 		// returns json data back to the client
-		json.NewEncoder(w).Encode(tasks)
+		json.NewEncoder(w).Encode(*tasks)
 
-		fmt.Printf("\n\nTasks sent to client:\n\n%v", tasks)
+		fmt.Printf("\n\nTasks sent to client:\n\n%v", *tasks)
 	}
 
 }
@@ -35,7 +43,7 @@ func GetTasks(tasks []types.Task) types.RouteHandlerFunc {
 //?---------------- GET SINGLE TASK ROUTE HANDLER ----------------?//
 
 // GetTask returns a callback that returns a json encoded response to the requesting application.
-func GetTask(tasks []types.Task) types.RouteHandlerFunc {
+func GetTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
@@ -47,14 +55,14 @@ func GetTask(tasks []types.Task) types.RouteHandlerFunc {
 
 		fmt.Printf("\nmux.Vars(r) value:\n\n%v", params)
 
-		for i := 0; i < len(tasks); i++ {
+		for i := 0; i < len(*tasks); i++ {
 
-			if params["id"] == tasks[i].ID {
+			if params["id"] == (*tasks)[i].ID {
 				isPresent = true
 
-				json.NewEncoder(w).Encode(tasks[i])
+				json.NewEncoder(w).Encode((*tasks)[i])
 
-				fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", params["id"], tasks[i])
+				fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", params["id"], (*tasks)[i])
 
 				break
 			}
@@ -77,7 +85,7 @@ func GetTask(tasks []types.Task) types.RouteHandlerFunc {
 
 //?---------------- CREATED TASK ROUTE HANDLER ----------------?//
 
-func CreateTask(tasks []types.Task) types.RouteHandlerFunc {
+func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
 
@@ -98,11 +106,11 @@ func CreateTask(tasks []types.Task) types.RouteHandlerFunc {
 
 		// append recieved decoded task to tasks Slice
 
-		tasks = append(tasks, newTask)
+		*tasks = append(*tasks, newTask)
 
 		// send the new task Slice as a response
 
-		json.NewEncoder(w).Encode(tasks)
+		json.NewEncoder(w).Encode(*tasks)
 
 		fmt.Printf("\n\nNew task created: \n\n%v", newTask)
 	}
@@ -113,7 +121,7 @@ func CreateTask(tasks []types.Task) types.RouteHandlerFunc {
 
 // TODO: use hashmap instead for constant time O(1) opperations instead of a linear O(n) for loop | a database would be even better
 
-func UpdateTask(tasks []types.Task) types.RouteHandlerFunc {
+func UpdateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
@@ -122,12 +130,12 @@ func UpdateTask(tasks []types.Task) types.RouteHandlerFunc {
 
 		isPresent := false
 
-		for index, task := range tasks {
+		for index, task := range *tasks {
 
 			if task.ID == params["id"] {
 				isPresent = true
 
-				tasks = append(tasks[:index], tasks[index+1:]...)
+				*tasks = append((*tasks)[:index], (*tasks)[index+1:]...)
 
 				var updatedTask types.Task
 
@@ -139,11 +147,11 @@ func UpdateTask(tasks []types.Task) types.RouteHandlerFunc {
 
 				updatedTask.CreatedDate = currentTime
 
-				tasks = append(tasks, updatedTask)
+				*tasks = append(*tasks, updatedTask)
 
-				fmt.Printf("\n\ntasks with appended updatedTask: %v", tasks)
+				fmt.Printf("\n\ntasks with appended updatedTask: %v", *tasks)
 
-				json.NewEncoder(w).Encode(tasks)
+				json.NewEncoder(w).Encode(*tasks)
 
 				fmt.Printf("\n\nUpdated task: %v", updatedTask)
 
@@ -163,7 +171,7 @@ func UpdateTask(tasks []types.Task) types.RouteHandlerFunc {
 
 //?---------------- DELETE TASK ROUTE HANDLER ----------------?//
 
-func DeleteTask(tasks []types.Task) types.RouteHandlerFunc {
+func DeleteTask(tasks *[]types.Task) types.RouteHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
 		params := mux.Vars(r)
@@ -171,15 +179,15 @@ func DeleteTask(tasks []types.Task) types.RouteHandlerFunc {
 
 		// O(N) --> O(1) ? Arrays to HashMaps for lookup operations
 
-		for index, task := range tasks {
+		for index, task := range *tasks {
 
 			if params["id"] == task.ID {
 
 				isPresent = true
 
-				tasks = append(tasks[:index], tasks[index+1:]...)
+				*tasks = append((*tasks)[:index], (*tasks)[index+1:]...)
 
-				json.NewEncoder(w).Encode(tasks)
+				json.NewEncoder(w).Encode(*tasks)
 
 				fmt.Printf("\n\ntask deleted: \n\n%v", task)
 
