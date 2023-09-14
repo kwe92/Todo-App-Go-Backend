@@ -16,14 +16,14 @@ import (
 // metaData represents meta data constants in a struct.
 var metaData = constants.HeaderData()
 
-//?---------------- HOME PAGE ROUTE HANDLER ----------------?//
+//---------------- HOME PAGE ROUTE HANDLER ----------------//
 
 func HomePage(tasks *[]types.Task) types.RouteHandlerFunc {
 	fmt.Println("I am the home page!")
 	return func(w http.ResponseWriter, r *http.Request) {}
 }
 
-//?---------------- GET ALL TASKSROUTE HANDLER ----------------?//
+//---------------- GET ALL TASKSROUTE HANDLER ----------------//
 
 // GetTasks returns a callback that returns a json encoded response to the requesting application.
 func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
@@ -40,7 +40,7 @@ func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
 
 }
 
-//?---------------- GET SINGLE TASK ROUTE HANDLER ----------------?//
+//---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
 
 // GetTask returns a callback that returns a json encoded response to the requesting application.
 func GetTask(tasks *[]types.Task) types.RouteHandlerFunc {
@@ -83,7 +83,7 @@ func GetTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 }
 
-//?---------------- CREATED TASK ROUTE HANDLER ----------------?//
+//---------------- CREATED TASK ROUTE HANDLER ----------------//
 
 func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +117,7 @@ func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 }
 
-//?---------------- UPDATED TASK ROUTE HANDLER ----------------?//
+//---------------- UPDATED TASK ROUTE HANDLER ----------------//
 
 // TODO: use hashmap instead for constant time O(1) opperations instead of a linear O(n) for loop | a database would be even better
 
@@ -169,7 +169,7 @@ func UpdateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 }
 
-//?---------------- DELETE TASK ROUTE HANDLER ----------------?//
+//---------------- DELETE TASK ROUTE HANDLER ----------------//
 
 func DeleteTask(tasks *[]types.Task) types.RouteHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

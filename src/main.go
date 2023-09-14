@@ -9,7 +9,7 @@ import (
 	types "example.com/declarations"
 )
 
-//?----------------  INITIAL TASKS ----------------?//
+//----------------  INITIAL TASKS ----------------//
 
 var tasks []types.Task
 
@@ -33,7 +33,7 @@ func init() {
 
 }
 
-//?----------------  MAIN FUNCTION ----------------?//
+//----------------  MAIN FUNCTION ----------------//
 
 func main() {
 
