@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
-	"time"
+	utils "utilities"
 
 	types "example.com/declarations"
 	"github.com/gorilla/mux"
@@ -23,7 +23,7 @@ func HomePage(tasks *[]types.Task) types.RouteHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {}
 }
 
-//---------------- GET ALL TASKSROUTE HANDLER ----------------//
+//---------------- GET ALL TASK SROUTE HANDLER ----------------//
 
 // GetTasks returns a callback that returns a json encoded response to the requesting application.
 func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
@@ -99,8 +99,7 @@ func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 		newTask.ID = strconv.Itoa(rand.Intn(1000))
 
-		// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-		currentTime := time.Now().Format("01-02-2006")
+		currentTime := utils.GetDate()
 
 		newTask.CreatedDate = currentTime
 
@@ -141,9 +140,7 @@ func UpdateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 				json.NewDecoder(r.Body).Decode(&updatedTask)
 
-				// TODO: replace with a utility function | DON'T REPEAT YOURSELF
-
-				currentTime := time.Now().Format("01-02-2006")
+				currentTime := utils.GetDate()
 
 				updatedTask.CreatedDate = currentTime
 
