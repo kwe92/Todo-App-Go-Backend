@@ -5,6 +5,7 @@ package main
 import (
 	"app_router"
 	"fmt"
+	utils "utilities"
 
 	types "example.com/declarations"
 )
@@ -13,7 +14,7 @@ import (
 
 var tasks []types.Task
 
-// defaultTasks assigns intial tasks.
+// defaultTasks assigns initial tasks.
 func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
 
 	for _, task := range defaultTasks {
@@ -27,6 +28,7 @@ func init() {
 		ID:          "1001",
 		TaskName:    "Create Your First Task",
 		TaskDetails: "One task at a time!",
+		CreatedDate: utils.GetDate(),
 	}
 	// assign inital tasks.
 	defaultTasks(&tasks, []types.Task{task0})

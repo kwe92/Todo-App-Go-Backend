@@ -4,7 +4,8 @@ import (
 	types "example.com/declarations"
 )
 
-// Pseudo Enum
+// Pseudo Enums
+
 const (
 	ContentTypeHeader = "Content-Type"
 	MediaTypeJson     = "application/json"
