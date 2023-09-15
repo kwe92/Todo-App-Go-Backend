@@ -10,6 +10,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	Get     = "GET"
+	Post    = "POST"
+	Put     = "PUT"
+	Delete  = "DELETE"
+	Address = ":8082"
+)
+
 // endpoints represent endpoint constants in a struct.
 var endpoints = constants.Endpoints()
 
@@ -20,17 +28,17 @@ func HandleRoutes(tasks *[]types.Task) {
 	router := mux.NewRouter()
 
 	// all API endpoints
-	router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods(Get)
 
-	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(tasks)).Methods(Get)
 
-	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods("GET")
+	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods(Get)
 
-	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(tasks)).Methods("POST")
+	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(tasks)).Methods(Post)
 
-	router.HandleFunc(endpoints.UpdateTask, routehandlers.UpdateTask(tasks)).Methods("PUT")
+	router.HandleFunc(endpoints.UpdateTask, routehandlers.UpdateTask(tasks)).Methods(Put)
 
-	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(tasks)).Methods("DELETE")
+	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(tasks)).Methods(Delete)
 
-	log.Fatal(http.ListenAndServe(":8082", router))
+	log.Fatal(http.ListenAndServe(Address, router))
 }
