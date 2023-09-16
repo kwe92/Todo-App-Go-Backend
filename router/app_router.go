@@ -22,17 +22,17 @@ const (
 var endpoints = constants.Endpoints()
 
 // handleRoutes handles all the routes for this API.
-func HandleRoutes(tasks *[]types.Task) {
+func HandleRoutes(tasks *map[string]types.Task) {
 
 	// router instance
 	router := mux.NewRouter()
 
 	// all API endpoints
-	router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods(Get)
+	// router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods(Get)
 
 	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(tasks)).Methods(Get)
 
-	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods(Get)
+	// router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods(Get)
 
 	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(tasks)).Methods(Post)
 
