@@ -14,11 +14,13 @@ import (
 
 var tasks []types.Task
 
+var tasksMap = make(map[string]types.Task)
+
 // defaultTasks assigns initial tasks.
-func defaultTasks(tasks *[]types.Task, defaultTasks []types.Task) {
+func defaultTasks(tasks *map[string]types.Task, defaultTasks []types.Task) {
 
 	for _, task := range defaultTasks {
-		*tasks = append(*tasks, task)
+		(*tasks)[task.ID] = task
 	}
 
 }
@@ -31,7 +33,7 @@ func init() {
 		CreatedDate: utils.GetDate(),
 	}
 	// assign inital tasks.
-	defaultTasks(&tasks, []types.Task{task0})
+	defaultTasks(&tasksMap, []types.Task{task0})
 
 }
 
@@ -41,7 +43,7 @@ func main() {
 
 	fmt.Printf("\nServer has started successfully!\n")
 
-	app_router.HandleRoutes(&tasks)
+	app_router.HandleRoutes(&tasksMap)
 
 }
 
