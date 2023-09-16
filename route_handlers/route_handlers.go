@@ -1,7 +1,6 @@
 package routehandlers
 
 import (
-	"constants"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,20 +10,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// taskError returns an error messange if a task does not exist.
 func taskError(w http.ResponseWriter, id string) {
 
 	fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", id)
 
-	json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", id)})
+	errorMap := map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", id)}
+
+	utils.JsonEncode(w, errorMap)
 
 }
 
-// metaData represents meta data constants in a struct.
-var metaData = constants.HeaderData()
-
 //---------------- HOME PAGE ROUTE HANDLER ----------------//
 
-func HomePage(tasks *[]types.Task) types.RouteHandlerFunc {
+func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	fmt.Println("I am the home page!")
 
@@ -32,20 +31,17 @@ func HomePage(tasks *[]types.Task) types.RouteHandlerFunc {
 
 }
 
-// TODO: refactor operations from O(n) --> O(1)
-
 //---------------- GET ALL TASK ROUTE HANDLER ----------------//
 
 // GetTasks returns all tasks as a json encoded response to the requesting application.
-func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
+func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// HTTP Header setup
-		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
+		utils.SetHeader(w)
 
 		// write a response of json data back to the client
-		json.NewEncoder(w).Encode(*tasks)
+		utils.JsonEncode(w, *tasks)
 
 		fmt.Printf("\n\nTasks sent to client:\n\n%v", *tasks)
 	}
@@ -55,30 +51,31 @@ func GetTasks(tasks *[]types.Task) types.RouteHandlerFunc {
 //---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
 
 // GetTasks returns the specified task as a json encoded response to the requesting application.
-func GetTask(tasks *[]types.Task) types.RouteHandlerFunc {
+func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
+		utils.SetHeader(w)
+
+		isPresent := false
 
 		// parameters recieved with client request
 		params := mux.Vars(r)
 
-		isPresent := false
+		taskId := params["id"]
+
+		task, keyExsists := (*tasks)[taskId]
 
 		fmt.Printf("\nroute variables:\n\n%v", params)
 
-		for i := 0; i < len(*tasks); i++ {
+		if keyExsists {
+			isPresent = true
 
-			if params["id"] == (*tasks)[i].ID {
-				isPresent = true
+			utils.JsonEncode(w, task)
 
-				json.NewEncoder(w).Encode((*tasks)[i])
+			fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", taskId, task)
 
-				fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", params["id"], (*tasks)[i])
-
-				break
-			}
+			return
 		}
 
 		if isPresent == false {
@@ -92,29 +89,31 @@ func GetTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 //---------------- CREATED TASK ROUTE HANDLER ----------------//
 
-func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
+func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
+		utils.SetHeader(w)
 
 		var newTask types.Task
 
 		// decode the request recieved from the client
 		json.NewDecoder(r.Body).Decode(&newTask)
 
+		taskId := utils.GetId()
+
 		// assign new task an id
-		newTask.ID = utils.GetId()
+		newTask.ID = taskId
 
 		currentTime := utils.GetDate()
 
 		newTask.CreatedDate = currentTime
 
 		// append recieved decoded task to tasks Slice
-		*tasks = append(*tasks, newTask)
+		(*tasks)[taskId] = newTask
 
 		// send the new task Slice as a response
-		json.NewEncoder(w).Encode(*tasks)
+		utils.JsonEncode(w, *tasks)
 
 		fmt.Printf("\n\nNew task created: \n\n%v", newTask)
 	}
@@ -123,42 +122,41 @@ func CreateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 //---------------- UPDATED TASK ROUTE HANDLER ----------------//
 
-func UpdateTask(tasks *[]types.Task) types.RouteHandlerFunc {
+func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
-
-		params := mux.Vars(r)
+		utils.SetHeader(w)
 
 		isPresent := false
 
-		for index, task := range *tasks {
+		params := mux.Vars(r)
 
-			if task.ID == params["id"] {
-				isPresent = true
+		taskId := params["id"]
 
-				*tasks = append((*tasks)[:index], (*tasks)[index+1:]...)
+		_, keyExists := ((*tasks)[taskId])
 
-				var updatedTask types.Task
+		if keyExists {
 
-				json.NewDecoder(r.Body).Decode(&updatedTask)
+			isPresent = true
 
-				currentTime := utils.GetDate()
+			var updatedTask types.Task
 
-				updatedTask.CreatedDate = currentTime
+			json.NewDecoder(r.Body).Decode(&updatedTask)
 
-				*tasks = append(*tasks, updatedTask)
+			currentTime := utils.GetDate()
 
-				fmt.Printf("\n\nUpdated task: %v", updatedTask)
+			updatedTask.CreatedDate = currentTime
 
-				fmt.Printf("\n\ntasks with appended updated task: %v", *tasks)
+			(*tasks)[taskId] = updatedTask
 
-				json.NewEncoder(w).Encode(*tasks)
+			fmt.Printf("\n\nUpdated task: %v", updatedTask)
 
-				break
+			fmt.Printf("\n\ntasks with appended updated task: %v", *tasks)
 
-			}
+			utils.JsonEncode(w, *tasks)
+
+			return
 
 		}
 
@@ -171,30 +169,30 @@ func UpdateTask(tasks *[]types.Task) types.RouteHandlerFunc {
 
 //---------------- DELETE TASK ROUTE HANDLER ----------------//
 
-func DeleteTask(tasks *[]types.Task) types.RouteHandlerFunc {
+func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
-
-		params := mux.Vars(r)
+		utils.SetHeader(w)
 
 		isPresent := false
 
-		for index, task := range *tasks {
+		params := mux.Vars(r)
 
-			if params["id"] == task.ID {
+		taskId := params["id"]
 
-				isPresent = true
+		deleteTask, keyExists := (*tasks)[taskId]
 
-				*tasks = append((*tasks)[:index], (*tasks)[index+1:]...)
+		if keyExists {
 
-				json.NewEncoder(w).Encode(*tasks)
+			delete((*tasks), taskId)
 
-				fmt.Printf("\n\ntask deleted: \n\n%v", task)
+			utils.JsonEncode(w, *tasks)
 
-				break
-			}
+			fmt.Printf("\n\ntask deleted: \n\n%v", deleteTask)
+
+			return
+
 		}
 
 		if isPresent == false {
