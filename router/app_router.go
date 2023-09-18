@@ -28,11 +28,11 @@ func HandleRoutes(tasks *map[string]types.Task) {
 	router := mux.NewRouter()
 
 	// all API endpoints
-	// router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods(Get)
+	router.HandleFunc(endpoints.Home, routehandlers.HomePage(tasks)).Methods(Get)
 
 	router.HandleFunc(endpoints.GetTasks, routehandlers.GetTasks(tasks)).Methods(Get)
 
-	// router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods(Get)
+	router.HandleFunc(endpoints.GetTask, routehandlers.GetTask(tasks)).Methods(Get)
 
 	router.HandleFunc(endpoints.CreateTask, routehandlers.CreateTask(tasks)).Methods(Post)
 
