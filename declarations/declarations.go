@@ -1,4 +1,4 @@
-// All the custom types used through the server.
+// All the custom types used throughout the server.
 package declarations
 
 import "net/http"

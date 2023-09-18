@@ -32,6 +32,7 @@ func init() {
 		TaskDetails: "One task at a time!",
 		CreatedDate: utils.GetDate(),
 	}
+
 	// assign inital tasks.
 	defaultTasks(&tasksMap, []types.Task{task0})
 

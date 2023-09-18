@@ -25,8 +25,6 @@ func taskError(w http.ResponseWriter, id string) {
 
 func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
-	fmt.Println("I am the home page!")
-
 	return func(w http.ResponseWriter, r *http.Request) {}
 
 }
@@ -50,7 +48,7 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 //---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
 
-// GetTasks returns the specified task as a json encoded response to the requesting application.
+// GetTask returns the specified task as a json encoded response to the requesting application.
 func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +62,11 @@ func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 		taskId := params["id"]
 
-		task, keyExsists := (*tasks)[taskId]
+		task, keyExists := (*tasks)[taskId]
 
 		fmt.Printf("\nroute variables:\n\n%v", params)
 
-		if keyExsists {
+		if keyExists {
 			isPresent = true
 
 			utils.JsonEncode(w, task)
@@ -87,8 +85,9 @@ func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 }
 
-//---------------- CREATED TASK ROUTE HANDLER ----------------//
+//---------------- CREATE TASK ROUTE HANDLER ----------------//
 
+// CreateTask adds the requested task to the tasks map and returns all tasks as a json encoded response to the requesting application.
 func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -105,14 +104,14 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 		// assign new task an id
 		newTask.ID = taskId
 
-		currentTime := utils.GetDate()
+		currentDate := utils.GetDate()
 
-		newTask.CreatedDate = currentTime
+		newTask.CreatedDate = currentDate
 
-		// append recieved decoded task to tasks Slice
+		// update task map with the new task value
 		(*tasks)[taskId] = newTask
 
-		// send the new task Slice as a response
+		// send the new tasks map as a response
 		utils.JsonEncode(w, *tasks)
 
 		fmt.Printf("\n\nNew task created: \n\n%v", newTask)
@@ -122,6 +121,7 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 //---------------- UPDATED TASK ROUTE HANDLER ----------------//
 
+// UpdateTask updates the requested task and returns all tasks as a json encoded response to the requesting application.
 func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +134,7 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 		taskId := params["id"]
 
-		_, keyExists := ((*tasks)[taskId])
+		previousTask, keyExists := ((*tasks)[taskId])
 
 		if keyExists {
 
@@ -149,6 +149,8 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 			updatedTask.CreatedDate = currentTime
 
 			(*tasks)[taskId] = updatedTask
+
+			fmt.Printf("\n\nPrevious task: %v", previousTask)
 
 			fmt.Printf("\n\nUpdated task: %v", updatedTask)
 
@@ -169,6 +171,7 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 //---------------- DELETE TASK ROUTE HANDLER ----------------//
 
+// DeleteTask deletes the requested task and returns all tasks as a json encoded response to the requesting application.
 func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -184,6 +187,8 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 		deleteTask, keyExists := (*tasks)[taskId]
 
 		if keyExists {
+
+			isPresent = true
 
 			delete((*tasks), taskId)
 
