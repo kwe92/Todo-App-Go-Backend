@@ -1,7 +1,6 @@
 package routehandlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	utils "utilities"
@@ -97,7 +96,7 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 		var newTask types.Task
 
 		// decode the request recieved from the client
-		json.NewDecoder(r.Body).Decode(&newTask)
+		utils.JsonDecode(r, &newTask)
 
 		taskId := utils.GetId()
 
@@ -142,7 +141,7 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 			var updatedTask types.Task
 
-			json.NewDecoder(r.Body).Decode(&updatedTask)
+			utils.JsonDecode(r, &updatedTask)
 
 			currentTime := utils.GetDate()
 
