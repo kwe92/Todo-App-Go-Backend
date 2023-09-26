@@ -206,3 +206,45 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 		}
 	}
 }
+
+// w http.ResponseWriter, r *http.Request
+
+//   - required parameters for the callback passed to router.HandleFunc
+//     to handle http requests and responses
+
+//   - type wr to auto-complete callback parameters
+
+//   - e.g. func homePage(w http.ResponseWriter, r *http.Request)
+
+//   ~ r *http.Request
+
+//       + used to retrieve query parameters and post request data
+
+//   ~  r.Body
+
+//        + the body of the Post request sent by the caller `client`
+
+//        + json.NewDecoder(r.Body).Decode(&task)
+
+//            * the request body sent by the client is decoded and
+//              stored in memory using a pointer by reference to a defined variable
+
+//            * underscore (_) is used because we are using a reference in memory not a value
+
+//   ~ w http.ResponseWriter
+
+//       + writes a response to the caller
+
+//       + json.NewEncoder(w).Encode(tasks)
+
+//           * returns json response back to the client
+//           * does not require a return statement
+
+// mux.Vars(r)
+
+//   - retrieves the parameters specified from a URI
+//       - e.g.localhost/gettask/{id} | 127.0.0.1/gettask/1001
+
+// HTTP Header setup
+
+//   - w.Header().Set("Content-Type", "application/json")
