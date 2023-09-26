@@ -25,13 +25,13 @@ func GetId() string {
 	return strconv.Itoa(rand.Intn(1000))
 }
 
-// jsonEncode converts [object] to a JSON string and sends it over the stream as a response.
-func JsonEncode(w http.ResponseWriter, data interface{}) {
+// jsonEncode converts [data] to a JSON string and sends it over the stream as a response.
+func JsonEncode[T any](w http.ResponseWriter, data T) {
 	json.NewEncoder(w).Encode(data)
 }
 
-// TODO: fix jsonDecode
-func JsonDecode(r *http.Request, ptr *interface{}) {
+// JsonDecode reads the next JSON-encoded value from its input and stores it in the value pointed to by v.
+func JsonDecode[T any](r *http.Request, ptr *T) {
 	json.NewDecoder(r.Body).Decode(&ptr)
 }
 
