@@ -35,6 +35,8 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		// write a response of json data back to the client
@@ -51,6 +53,8 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
 
 		utils.SetHeader(w)
 
@@ -91,6 +95,8 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		var newTask types.Task
@@ -124,6 +130,8 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
 
 		utils.SetHeader(w)
 
@@ -174,6 +182,8 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
 
 		utils.SetHeader(w)
 
