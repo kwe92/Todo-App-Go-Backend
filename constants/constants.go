@@ -39,3 +39,8 @@ func Endpoints() types.EndPoints {
 		DeleteTask: DeleteTask,
 	}
 }
+
+// Enumerated Types Go
+
+//   - there are no default enums in Go
+//   - a set of constant values can be defined and used throughout your Go application

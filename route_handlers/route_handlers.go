@@ -1,7 +1,6 @@
 package routehandlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	utils "utilities"
@@ -36,6 +35,8 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		// write a response of json data back to the client
@@ -52,6 +53,8 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
 
 		utils.SetHeader(w)
 
@@ -92,12 +95,14 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		var newTask types.Task
 
 		// decode the request recieved from the client
-		json.NewDecoder(r.Body).Decode(&newTask)
+		utils.JsonDecode(r, &newTask)
 
 		taskId := utils.GetId()
 
@@ -126,6 +131,8 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		isPresent := false
@@ -142,7 +149,7 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 			var updatedTask types.Task
 
-			json.NewDecoder(r.Body).Decode(&updatedTask)
+			utils.JsonDecode(r, &updatedTask)
 
 			currentTime := utils.GetDate()
 
@@ -176,6 +183,8 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+
 		utils.SetHeader(w)
 
 		isPresent := false
@@ -207,3 +216,45 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 		}
 	}
 }
+
+// w http.ResponseWriter, r *http.Request
+
+//   - required parameters for the callback passed to router.HandleFunc
+//     to handle http requests and responses
+
+//   - type wr to auto-complete callback parameters
+
+//   - e.g. func homePage(w http.ResponseWriter, r *http.Request)
+
+//   ~ r *http.Request
+
+//       + used to retrieve query parameters and post request data
+
+//   ~  r.Body
+
+//        + the body of the Post request sent by the caller `client`
+
+//        + json.NewDecoder(r.Body).Decode(&task)
+
+//            * the request body sent by the client is decoded and
+//              stored in memory using a pointer by reference to a defined variable
+
+//            * underscore (_) is used because we are using a reference in memory not a value
+
+//   ~ w http.ResponseWriter
+
+//       + writes a response to the caller
+
+//       + json.NewEncoder(w).Encode(tasks)
+
+//           * returns json response back to the client
+//           * does not require a return statement
+
+// mux.Vars(r)
+
+//   - retrieves the parameters specified from a URI
+//       - e.g.localhost/gettask/{id} | 127.0.0.1/gettask/1001
+
+// HTTP Header setup
+
+//   - w.Header().Set("Content-Type", "application/json")
