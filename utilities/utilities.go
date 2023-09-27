@@ -41,3 +41,8 @@ func SetHeader(w http.ResponseWriter) {
 	w.Header().Set(metaData.ContentTypeHeader, metaData.MediaTypeJson)
 
 }
+
+// GetUrl returns the request host concatenated to the path.
+func GetUrl(r *http.Request) string {
+	return r.Host + r.URL.Path
+}
