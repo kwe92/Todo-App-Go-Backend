@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// taskError returns an error messange if a task does not exist.
+// taskError returns an error message if a task does not exist.
 func taskError(w http.ResponseWriter, id string) {
 
 	fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", id)
@@ -22,7 +22,7 @@ func taskError(w http.ResponseWriter, id string) {
 
 //---------------- HOME PAGE ROUTE HANDLER ----------------//
 
-func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func HomePage(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {}
 
@@ -31,7 +31,7 @@ func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- GET ALL TASK ROUTE HANDLER ----------------//
 
 // GetTasks returns all tasks as a json encoded response to the requesting application.
-func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func GetTasks(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -50,7 +50,7 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
 
 // GetTask returns the specified task as a json encoded response to the requesting application.
-func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func GetTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -91,7 +91,7 @@ func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- CREATE TASK ROUTE HANDLER ----------------//
 
 // CreateTask adds the requested task to the tasks map and returns all tasks as a json encoded response to the requesting application.
-func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -127,7 +127,7 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- UPDATED TASK ROUTE HANDLER ----------------//
 
 // UpdateTask updates the requested task and returns all tasks as a json encoded response to the requesting application.
-func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -179,7 +179,7 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- DELETE TASK ROUTE HANDLER ----------------//
 
 // DeleteTask deletes the requested task and returns all tasks as a json encoded response to the requesting application.
-func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
