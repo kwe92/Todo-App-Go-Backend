@@ -1,4 +1,5 @@
-// All the custom types used throughout the server.
+// All the defined types used throughout the server.
+
 package declarations
 
 import "net/http"
@@ -25,3 +26,5 @@ type EndPoints struct {
 }
 
 type RouteHandlerFunc func(http.ResponseWriter, *http.Request)
+
+type TaskMap map[string]Task
