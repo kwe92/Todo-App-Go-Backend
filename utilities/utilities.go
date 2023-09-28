@@ -3,6 +3,7 @@ package utilities
 import (
 	"constants"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -42,7 +43,7 @@ func SetHeader(w http.ResponseWriter) {
 
 }
 
-// GetUrl returns the request host concatenated to the path.
-func GetUrl(r *http.Request) string {
-	return r.Host + r.URL.Path
+// ParseURL returns the request host concatenated to the path.
+func ParseURL(r *http.Request) {
+	fmt.Printf("\n\nrequest URL: %v", r.Host+r.URL.Path)
 }
