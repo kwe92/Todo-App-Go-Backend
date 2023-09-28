@@ -28,10 +28,11 @@ func defaultTasks(tasks *types.TaskMap, defaultTasks []types.Task) {
 
 func init() {
 	var task0 = types.Task{
-		ID:          "1001",
-		TaskName:    "Create Your First Task",
-		TaskDetails: "One task at a time!",
-		CreatedDate: utils.GetDate(),
+		ID:           "1001",
+		TaskName:     "Create Your First Task",
+		TaskDetails:  "One task at a time!",
+		CreatedDate:  utils.GetDate(),
+		ModifiedDate: utils.GetDate(),
 	}
 
 	// assign inital tasks.

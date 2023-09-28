@@ -113,6 +113,8 @@ func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 		newTask.CreatedDate = currentDate
 
+		newTask.ModifiedDate = currentDate
+
 		// update task map with the new task value
 		(*tasks)[taskId] = newTask
 
@@ -153,7 +155,9 @@ func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 			currentTime := utils.GetDate()
 
-			updatedTask.CreatedDate = currentTime
+			updatedTask.CreatedDate = previousTask.CreatedDate
+
+			updatedTask.ModifiedDate = currentTime
 
 			(*tasks)[taskId] = updatedTask
 
