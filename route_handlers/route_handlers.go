@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// taskError returns an error messange if a task does not exist.
+// taskError returns an error message if a task does not exist.
 func taskError(w http.ResponseWriter, id string) {
 
 	fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", id)
@@ -22,7 +22,7 @@ func taskError(w http.ResponseWriter, id string) {
 
 //---------------- HOME PAGE ROUTE HANDLER ----------------//
 
-func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func HomePage(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {}
 
@@ -31,11 +31,11 @@ func HomePage(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- GET ALL TASK ROUTE HANDLER ----------------//
 
 // GetTasks returns all tasks as a json encoded response to the requesting application.
-func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func GetTasks(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+		utils.ParseURL(r)
 
 		utils.SetHeader(w)
 
@@ -50,11 +50,11 @@ func GetTasks(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- GET SINGLE TASK ROUTE HANDLER ----------------//
 
 // GetTask returns the specified task as a json encoded response to the requesting application.
-func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func GetTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+		utils.ParseURL(r)
 
 		utils.SetHeader(w)
 
@@ -91,11 +91,11 @@ func GetTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- CREATE TASK ROUTE HANDLER ----------------//
 
 // CreateTask adds the requested task to the tasks map and returns all tasks as a json encoded response to the requesting application.
-func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+		utils.ParseURL(r)
 
 		utils.SetHeader(w)
 
@@ -113,6 +113,8 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 		newTask.CreatedDate = currentDate
 
+		newTask.ModifiedDate = currentDate
+
 		// update task map with the new task value
 		(*tasks)[taskId] = newTask
 
@@ -127,11 +129,11 @@ func CreateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- UPDATED TASK ROUTE HANDLER ----------------//
 
 // UpdateTask updates the requested task and returns all tasks as a json encoded response to the requesting application.
-func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+		utils.ParseURL(r)
 
 		utils.SetHeader(w)
 
@@ -153,7 +155,9 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 
 			currentTime := utils.GetDate()
 
-			updatedTask.CreatedDate = currentTime
+			updatedTask.CreatedDate = previousTask.CreatedDate
+
+			updatedTask.ModifiedDate = currentTime
 
 			(*tasks)[taskId] = updatedTask
 
@@ -179,11 +183,11 @@ func UpdateTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //---------------- DELETE TASK ROUTE HANDLER ----------------//
 
 // DeleteTask deletes the requested task and returns all tasks as a json encoded response to the requesting application.
-func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
+func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Printf("\n\nrequest URL: %v", utils.GetUrl(r))
+		utils.ParseURL(r)
 
 		utils.SetHeader(w)
 
@@ -217,22 +221,58 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 	}
 }
 
-// w http.ResponseWriter, r *http.Request
+// http.Request
 
-//   - required parameters for the callback passed to router.HandleFunc
-//     to handle http requests and responses
+//   - a struct defined in the http package containing
+//     important fields and method implementations
+//     to represent a received HTTP request from a client to the server
 
-//   - type wr to auto-complete callback parameters
+// Body Fields | http.Request
 
-//   - e.g. func homePage(w http.ResponseWriter, r *http.Request)
+//   - contains the data of a request sent by the caller `client`
+//   - has a type of io.ReadCloser that needs to be converted to a string
+//   - typcially all of the content form a io.ReadCloser gets read into a Slice of bytes
+//     using helper packages like ioutil or the content can be buffered using the bytes package
 
-//   ~ r *http.Request
+// URL Field | http.Request
 
-//       + used to retrieve query parameters and post request data
+//   - Contains parsed URL meta-data that can be accessed such as:
+//       - host, path, and query parameters
 
-//   ~  r.Body
+// Header Method | http.Request
 
-//        + the body of the Post request sent by the caller `client`
+//   - returns an http.Header type that is a map with additional method implementations
+//     which represents the key-value pairs in an HTTP header
+
+// http.ResponseWriter
+
+//   - an interface defined in the http package
+//   - provides a server the required method signatures to create HTTP responses
+//     for received client requests
+
+// Write Method | http.ResponseWriter
+
+//   - an implementation of io.Writer and writes data to the response
+
+// Header Method | http.ResponseWriter
+
+//   - returns an http.Header type
+
+// WriteHeader Method | http.ResponseWriter
+
+//   - takes a status code as an argument and sends an HTTP response Header
+//     along with the status code
+
+// mux.Vars(r)
+
+//   - Returns the route variables for the current request
+
+// TODO: Edit the bellow comments
+
+//       + json.NewEncoder(w).Encode(tasks)
+
+//           * returns json response back to the client
+//           * does not require a return statement
 
 //        + json.NewDecoder(r.Body).Decode(&task)
 
@@ -240,17 +280,6 @@ func DeleteTask(tasks *map[string]types.Task) types.RouteHandlerFunc {
 //              stored in memory using a pointer by reference to a defined variable
 
 //            * underscore (_) is used because we are using a reference in memory not a value
-
-//   ~ w http.ResponseWriter
-
-//       + writes a response to the caller
-
-//       + json.NewEncoder(w).Encode(tasks)
-
-//           * returns json response back to the client
-//           * does not require a return statement
-
-// mux.Vars(r)
 
 //   - retrieves the parameters specified from a URI
 //       - e.g.localhost/gettask/{id} | 127.0.0.1/gettask/1001

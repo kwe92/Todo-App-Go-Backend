@@ -22,7 +22,7 @@ const (
 var endpoints = constants.Endpoints()
 
 // handleRoutes handles all the routes for this API.
-func HandleRoutes(tasks *map[string]types.Task) {
+func HandleRoutes(tasks *types.TaskMap) {
 
 	// router instance
 	router := mux.NewRouter()

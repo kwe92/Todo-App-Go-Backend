@@ -15,10 +15,10 @@ import (
 
 var tasks []types.Task
 
-var tasksMap = make(map[string]types.Task)
+var tasksMap = make(types.TaskMap)
 
 // defaultTasks assigns initial tasks.
-func defaultTasks(tasks *map[string]types.Task, defaultTasks []types.Task) {
+func defaultTasks(tasks *types.TaskMap, defaultTasks []types.Task) {
 
 	for _, task := range defaultTasks {
 		(*tasks)[task.ID] = task
@@ -28,10 +28,11 @@ func defaultTasks(tasks *map[string]types.Task, defaultTasks []types.Task) {
 
 func init() {
 	var task0 = types.Task{
-		ID:          "1001",
-		TaskName:    "Create Your First Task",
-		TaskDetails: "One task at a time!",
-		CreatedDate: utils.GetDate(),
+		ID:           "1001",
+		TaskName:     "Create Your First Task",
+		TaskDetails:  "One task at a time!",
+		CreatedDate:  utils.GetDate(),
+		ModifiedDate: utils.GetDate(),
 	}
 
 	// assign inital tasks.

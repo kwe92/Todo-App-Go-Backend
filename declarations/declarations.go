@@ -1,13 +1,15 @@
-// All the custom types used throughout the server.
+// All the defined types used throughout the server.
+
 package declarations
 
 import "net/http"
 
 type Task struct {
-	ID          string `json:"id"`
-	TaskName    string `json:"task_name"`
-	TaskDetails string `json:"task_details"`
-	CreatedDate string `json:"created_date"`
+	ID           string `json:"id"`
+	TaskName     string `json:"task_name"`
+	TaskDetails  string `json:"task_details"`
+	CreatedDate  string `json:"created_date"`
+	ModifiedDate string `json:"modified_date"`
 }
 
 type HeaderMetaData struct {
@@ -25,3 +27,5 @@ type EndPoints struct {
 }
 
 type RouteHandlerFunc func(http.ResponseWriter, *http.Request)
+
+type TaskMap map[string]Task
