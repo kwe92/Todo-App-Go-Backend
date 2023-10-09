@@ -7,13 +7,14 @@ import (
 	utils "utilities"
 )
 
-// TODO: add coments
-
+// Logger: middleware that logs request metadata.
 type Logger struct {
 	Handler http.Handler
 	Prefix  string
 }
 
+// ServeHTTP: handles the request by logging meta data
+// and passing the http.ResponseWrite and http.*Request to the Loggers handler.
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if len(l.Prefix) == 0 {
@@ -32,6 +33,7 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// NewLogger: returns a new Logger object wrapped around the handler.
 func NewLogger(handler http.Handler, prefix ...string) *Logger {
 
 	var pf string
