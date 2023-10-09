@@ -2,8 +2,6 @@ package app_router
 
 import (
 	"constants"
-	"log"
-	"net/http"
 	"routehandlers"
 
 	types "example.com/declarations"
@@ -22,7 +20,7 @@ const (
 var endpoints = constants.Endpoints()
 
 // handleRoutes handles all the routes for this API.
-func HandleRoutes(tasks *types.TaskMap) {
+func SetUpRouter(tasks *types.TaskMap) *mux.Router {
 
 	// router instance
 	router := mux.NewRouter()
@@ -40,7 +38,7 @@ func HandleRoutes(tasks *types.TaskMap) {
 
 	router.HandleFunc(endpoints.DeleteTask, routehandlers.DeleteTask(tasks)).Methods(Delete)
 
-	log.Fatal(http.ListenAndServe(Address, router))
+	return router
 }
 
 // Package gorilla/mux
