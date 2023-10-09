@@ -1,5 +1,7 @@
 package routehandlers
 
+// TODO: handle json encoding and decoding errors
+
 import (
 	"fmt"
 	"net/http"
