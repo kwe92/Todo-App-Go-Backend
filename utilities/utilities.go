@@ -31,6 +31,7 @@ func JsonEncode[T any](w http.ResponseWriter, data T) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// TODO: chage to take io.ReadCloser as first argument
 // JsonDecode reads the next JSON-encoded value from its input and stores it in the value pointed to by v.
 func JsonDecode[T any](r *http.Request, ptr *T) {
 	json.NewDecoder(r.Body).Decode(&ptr)
@@ -44,6 +45,6 @@ func SetHeader(w http.ResponseWriter) {
 }
 
 // ParseURL returns the request host concatenated to the path.
-func ParseURL(r *http.Request) {
-	fmt.Printf("\n\nrequest URL: %v", r.Host+r.URL.Path)
+func ParseURL(r *http.Request) string {
+	return fmt.Sprintln(r.Host + r.URL.Path)
 }
