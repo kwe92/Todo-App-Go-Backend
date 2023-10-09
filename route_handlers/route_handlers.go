@@ -1,7 +1,6 @@
 package routehandlers
 
 import (
-	"constants"
 	"fmt"
 	"net/http"
 	utils "utilities"
@@ -220,39 +219,6 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 		}
 	}
-}
-
-const (
-	Get     = "GET"
-	Post    = "POST"
-	Put     = "PUT"
-	Delete  = "DELETE"
-	Address = ":8082"
-)
-
-// endpoints represent endpoint constants in a struct.
-var endpoints = constants.Endpoints()
-
-// handleRoutes handles all the routes for this API.
-func SetUpRouter(tasks *types.TaskMap) *mux.Router {
-
-	// router instance
-	router := mux.NewRouter()
-
-	// all API endpoints
-	router.HandleFunc(endpoints.Home, HomePage(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.GetTasks, GetTasks(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.GetTask, GetTask(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.CreateTask, CreateTask(tasks)).Methods(Post)
-
-	router.HandleFunc(endpoints.UpdateTask, UpdateTask(tasks)).Methods(Put)
-
-	router.HandleFunc(endpoints.DeleteTask, DeleteTask(tasks)).Methods(Delete)
-
-	return router
 }
 
 // http.Request
