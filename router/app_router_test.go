@@ -1,8 +1,8 @@
 package app_router
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -18,8 +18,8 @@ func TestGetTasksHandler(t *testing.T) {
 
 	checkError(err)
 
-	tasksMap := make(types.TaskMap)
-	tasksMap1 := make(types.TaskMap)
+	expectedContent := make(types.TaskMap)
+	receivedContent := make(types.TaskMap)
 
 	var task0 = types.Task{
 		ID:           "1001",
@@ -29,15 +29,15 @@ func TestGetTasksHandler(t *testing.T) {
 		ModifiedDate: utils.GetDate(),
 	}
 
-	tasksMap[task0.ID] = task0
+	expectedContent[task0.ID] = task0
 
-	router := SetUpRouter(&tasksMap)
+	router := SetUpRouter(&expectedContent)
 
 	response := httptest.NewRecorder()
 
 	router.ServeHTTP(response, req)
 
-	err = json.NewDecoder(response.Body).Decode(&tasksMap1)
+	utils.JsonDecode(io.NopCloser(response.Body), &receivedContent)
 
 	checkError(err)
 
@@ -48,10 +48,10 @@ func TestGetTasksHandler(t *testing.T) {
 		)
 	}
 
-	if fmt.Sprint(tasksMap1) != fmt.Sprint(tasksMap) {
+	if fmt.Sprint(receivedContent) != fmt.Sprint(expectedContent) {
 		t.Fatalf("the response body should be [%s] but received [%s]",
-			fmt.Sprint(tasksMap),
-			fmt.Sprint(tasksMap1),
+			fmt.Sprint(expectedContent),
+			fmt.Sprint(receivedContent),
 		)
 	}
 
