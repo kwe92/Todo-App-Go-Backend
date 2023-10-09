@@ -7,6 +7,7 @@ import (
 	"app_router"
 	"fmt"
 	"log"
+	"middleware_setup"
 	"net/http"
 	utils "utilities"
 
@@ -48,7 +49,7 @@ func main() {
 
 	fmt.Printf("\nServer has started successfully!\n")
 
-	router := app_router.SetUpRouter(&tasksMap)
+	router := middleware_setup.SetupMiddleware(app_router.SetUpRouter(&tasksMap))
 
 	log.Fatal(http.ListenAndServe(app_router.Address, router))
 

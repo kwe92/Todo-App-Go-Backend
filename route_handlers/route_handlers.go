@@ -1,7 +1,6 @@
 package routehandlers
 
 import (
-	"constants"
 	"fmt"
 	"net/http"
 	utils "utilities"
@@ -13,7 +12,7 @@ import (
 // taskError returns an error message if a task does not exist.
 func taskError(w http.ResponseWriter, id string) {
 
-	fmt.Printf("\n\nClient requested task id: %v which doesn't exist in the list of tasks", id)
+	fmt.Printf("\nClient requested task id: %v which doesn't exist in the list of tasks", id)
 
 	errorMap := map[string]string{"error": fmt.Sprintf("there was an issue retrieving your data, TaskId: %v may not exist", id)}
 
@@ -36,14 +35,12 @@ func GetTasks(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		utils.ParseURL(r)
-
-		utils.SetHeader(w)
+		fmt.Println("\n\nHEADERS: ", w.Header())
 
 		// write a response of json data back to the client
 		utils.JsonEncode(w, *tasks)
 
-		fmt.Printf("\n\nTasks sent to client:\n\n%v", *tasks)
+		fmt.Printf("\nTasks sent to client:\n\n%v\n", *tasks)
 	}
 
 }
@@ -54,10 +51,6 @@ func GetTasks(tasks *types.TaskMap) types.RouteHandlerFunc {
 func GetTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		utils.ParseURL(r)
-
-		utils.SetHeader(w)
 
 		isPresent := false
 
@@ -75,7 +68,7 @@ func GetTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 			utils.JsonEncode(w, task)
 
-			fmt.Printf("\n\nTask id: %v sent to client:\n\n%v", taskId, task)
+			fmt.Printf("\n\nTask id: %v sent to client:\n\n%v\n", taskId, task)
 
 			return
 		}
@@ -95,10 +88,6 @@ func GetTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		utils.ParseURL(r)
-
-		utils.SetHeader(w)
 
 		var newTask types.Task
 
@@ -122,7 +111,7 @@ func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 		// send the new tasks map as a response
 		utils.JsonEncode(w, *tasks)
 
-		fmt.Printf("\n\nNew task created: \n\n%v", newTask)
+		fmt.Printf("\nNew task created: \n\n%v\n", newTask)
 	}
 
 }
@@ -133,10 +122,6 @@ func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		utils.ParseURL(r)
-
-		utils.SetHeader(w)
 
 		isPresent := false
 
@@ -162,11 +147,11 @@ func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 			(*tasks)[taskId] = updatedTask
 
-			fmt.Printf("\n\nPrevious task: %v", previousTask)
+			fmt.Printf("\nPrevious task: %v", previousTask)
 
 			fmt.Printf("\n\nUpdated task: %v", updatedTask)
 
-			fmt.Printf("\n\ntasks with appended updated task: %v", *tasks)
+			fmt.Printf("\n\ntasks with appended updated task: %v\n", *tasks)
 
 			utils.JsonEncode(w, *tasks)
 
@@ -188,10 +173,6 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		utils.ParseURL(r)
-
-		utils.SetHeader(w)
-
 		isPresent := false
 
 		params := mux.Vars(r)
@@ -208,7 +189,7 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 			utils.JsonEncode(w, *tasks)
 
-			fmt.Printf("\n\ntask deleted: \n\n%v", deleteTask)
+			fmt.Printf("\ntask deleted: \n\n%v\n", deleteTask)
 
 			return
 
@@ -220,39 +201,6 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 		}
 	}
-}
-
-const (
-	Get     = "GET"
-	Post    = "POST"
-	Put     = "PUT"
-	Delete  = "DELETE"
-	Address = ":8082"
-)
-
-// endpoints represent endpoint constants in a struct.
-var endpoints = constants.Endpoints()
-
-// handleRoutes handles all the routes for this API.
-func SetUpRouter(tasks *types.TaskMap) *mux.Router {
-
-	// router instance
-	router := mux.NewRouter()
-
-	// all API endpoints
-	router.HandleFunc(endpoints.Home, HomePage(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.GetTasks, GetTasks(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.GetTask, GetTask(tasks)).Methods(Get)
-
-	router.HandleFunc(endpoints.CreateTask, CreateTask(tasks)).Methods(Post)
-
-	router.HandleFunc(endpoints.UpdateTask, UpdateTask(tasks)).Methods(Put)
-
-	router.HandleFunc(endpoints.DeleteTask, DeleteTask(tasks)).Methods(Delete)
-
-	return router
 }
 
 // http.Request
