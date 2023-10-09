@@ -35,8 +35,6 @@ func GetTasks(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("\n\nHEADERS: ", w.Header())
-
 		// write a response of json data back to the client
 		utils.JsonEncode(w, *tasks)
 
@@ -92,7 +90,7 @@ func CreateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 		var newTask types.Task
 
 		// decode the request recieved from the client
-		utils.JsonDecode(r, &newTask)
+		utils.JsonDecode(r.Body, &newTask)
 
 		taskId := utils.GetId()
 
@@ -137,7 +135,7 @@ func UpdateTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 			var updatedTask types.Task
 
-			utils.JsonDecode(r, &updatedTask)
+			utils.JsonDecode(r.Body, &updatedTask)
 
 			currentTime := utils.GetDate()
 
