@@ -11,3 +11,9 @@ use ./route_handlers
 use ./router
 
 use ./utilities
+
+use ./middleware/logger
+
+use ./middleware/response_header
+
+use ./middleware/middleware_setup

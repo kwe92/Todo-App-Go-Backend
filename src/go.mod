@@ -14,3 +14,5 @@ replace example.com/declarations => ../declarations
 replace constants => ../constants
 
 replace app_router => ./router
+
+replace middleware => ../middleware
