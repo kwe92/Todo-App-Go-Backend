@@ -256,7 +256,7 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 // Header Method | http.ResponseWriter
 
-//   - returns an http.Header type
+//   - returns an http.Header type, a defined map with additional methods containing http header meta data
 
 // WriteHeader Method | http.ResponseWriter
 
@@ -267,23 +267,25 @@ func DeleteTask(tasks *types.TaskMap) types.RouteHandlerFunc {
 
 //   - Returns the route variables for the current request
 
-// TODO: Edit the bellow comments
+// json package
 
-//       + json.NewEncoder(w).Encode(tasks)
+//   - implements JSON encoding and decoding
 
-//           * returns json response back to the client
-//           * does not require a return statement
+// json.NewEncoder(http.ResponseWriter)
 
-//        + json.NewDecoder(r.Body).Decode(&task)
+//   - returns a new encoder that writes to an http.ResponseWriter
 
-//            * the request body sent by the client is decoded and
-//              stored in memory using a pointer by reference to a defined variable
+// json.NewEncoder(w).Encode(v)
 
-//            * underscore (_) is used because we are using a reference in memory not a value
+//   - writes the json encoding of v to the stream
+//   - returns json response back to the client
 
-//   - retrieves the parameters specified from a URI
-//       - e.g.localhost/gettask/{id} | 127.0.0.1/gettask/1001
+// json.NewDecoder(http.Request)
 
-// HTTP Header setup
+//   - returns a new decoder that reads from r
+//   - the decoder buffers and may read beyond the content of the http.Request io.ReadCloser
 
-//   - w.Header().Set("Content-Type", "application/json")
+// json.NewDecoder(http.Request).Decode(&v)
+
+//   - reads the next JSON-encoded value from its input and stores it in the variable pointed to by v
+//   = stores io.ReadCloser content in memory using a pointer to a defined variable

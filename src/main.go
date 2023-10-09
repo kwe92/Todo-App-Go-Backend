@@ -6,6 +6,8 @@ package main
 import (
 	"app_router"
 	"fmt"
+	"log"
+	"net/http"
 	utils "utilities"
 
 	types "example.com/declarations"
@@ -46,6 +48,8 @@ func main() {
 
 	fmt.Printf("\nServer has started successfully!\n")
 
-	app_router.HandleRoutes(&tasksMap)
+	router := app_router.SetUpRouter(&tasksMap)
+
+	log.Fatal(http.ListenAndServe(app_router.Address, router))
 
 }
