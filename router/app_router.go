@@ -19,7 +19,7 @@ const (
 // endpoints represent endpoint constants in a struct.
 var endpoints = constants.Endpoints()
 
-// handleRoutes handles all the routes for this API.
+// SetUpRouter: registers defined handlers to patterns and adds a matcher for HTTP methods.
 func SetUpRouter(tasks *types.TaskMap) *mux.Router {
 
 	// router instance
