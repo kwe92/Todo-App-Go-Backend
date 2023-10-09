@@ -4,6 +4,7 @@ import (
 	"constants"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -31,10 +32,9 @@ func JsonEncode[T any](w http.ResponseWriter, data T) {
 	json.NewEncoder(w).Encode(data)
 }
 
-// TODO: chage to take io.ReadCloser as first argument
 // JsonDecode reads the next JSON-encoded value from its input and stores it in the value pointed to by v.
-func JsonDecode[T any](r *http.Request, ptr *T) {
-	json.NewDecoder(r.Body).Decode(&ptr)
+func JsonDecode[T any](rc io.ReadCloser, ptr *T) {
+	json.NewDecoder(rc).Decode(&ptr)
 }
 
 // setHeader sets up HTTP Header meta data.
