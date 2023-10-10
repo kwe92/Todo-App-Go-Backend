@@ -28,7 +28,7 @@ func GetId() string {
 }
 
 // jsonEncode converts [data] to a JSON string and sends it over the stream as a response.
-func JsonEncode[T any](w http.ResponseWriter, data T) error {
+func JsonEncode[T any](w io.Writer, data T) error {
 	return json.NewEncoder(w).Encode(data)
 }
 
