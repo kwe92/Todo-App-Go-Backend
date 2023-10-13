@@ -29,39 +29,36 @@ var testTask = types.Task{
 
 func TestGetTasksHandler(t *testing.T) {
 
+	// create request to desired endpoint
 	req, err := http.NewRequest(Get, endpoints.GetTasks, nil)
 
+	// check if there was an error generating the request
 	checkError(err)
 
-	expectedContent := make(types.TaskMap)
-	receivedContent := make(types.TaskMap)
+	// create a map of expected response
+	expected := make(types.TaskMap)
 
-	expectedContent[testTask.ID] = testTask
+	// create a map of received response
+	received := make(types.TaskMap)
 
-	router := SetUpRouter(&expectedContent)
+	expected[testTask.ID] = testTask
 
+	// set up router
+	router := SetUpRouter(&expected)
+
+	// create a ResponseRecorder to act as a ResponseWriter
 	response := httptest.NewRecorder()
 
+	// match request URL to a pattern of a registered handler and excute the handler, loading the response body
 	router.ServeHTTP(response, req)
 
-	utils.JsonDecode(io.NopCloser(response.Body), &receivedContent)
+	// write the response body bytes to a GO data structure
+	utils.JsonDecode(io.NopCloser(response.Body), &received)
 
-	// TODO: turn into predicate | keep code DRY
-	if response.Result().StatusCode != 200 {
-		t.Fatalf("the status code should be [%d] but received [%d]",
-			200,
-			response.Result().StatusCode,
-		)
-	}
+	// match status code to expected status code
+	matchStatusCode(t, response.Result().StatusCode)
 
-	// TODO: turn into predicate | keep code DRY
-
-	if fmt.Sprint(receivedContent) != fmt.Sprint(expectedContent) {
-		t.Fatalf("the response body should be [%s] but received [%s]",
-			fmt.Sprint(expectedContent),
-			fmt.Sprint(receivedContent),
-		)
-	}
+	matchContent(t, expected, received)
 
 }
 
@@ -85,21 +82,9 @@ func TestGetTask(t *testing.T) {
 
 	utils.JsonDecode(io.NopCloser(response.Body), &received)
 
-	if response.Result().StatusCode != 200 {
-		t.Fatalf("the status code should be [%d] but received [%d]",
-			200,
-			response.Result().StatusCode,
-		)
-	}
+	matchStatusCode(t, response.Result().StatusCode)
 
-	if received != expected {
-
-		t.Fatalf("the response body should be [%s] but received [%s]",
-			fmt.Sprint(expected),
-			fmt.Sprint(received),
-		)
-
-	}
+	matchContent(t, expected, received)
 
 	checkError(err)
 
@@ -137,7 +122,7 @@ func TestCreateTask(t *testing.T) {
 
 	var keys []string
 
-	for key, _ := range responseTaskMap {
+	for key := range responseTaskMap {
 		keys = append(keys, key)
 	}
 
@@ -148,21 +133,9 @@ func TestCreateTask(t *testing.T) {
 
 	expected := createdTask.TaskDetails
 
-	if response.Result().StatusCode != 200 {
-		t.Fatalf("the status code should be [%d] but received [%d]",
-			200,
-			response.Result().StatusCode,
-		)
-	}
+	matchStatusCode(t, response.Result().StatusCode)
 
-	if received != expected {
-
-		t.Fatalf("the response body should be [%s] but received [%s]",
-			fmt.Sprint(expected),
-			fmt.Sprint(received),
-		)
-
-	}
+	matchContent(t, expected, received)
 
 }
 
@@ -200,15 +173,68 @@ func TestUpdateTask(t *testing.T) {
 
 	received := responseTaskMap["1001"].TaskDetails
 
-	// TODO: add if statments
-	if response.Result().StatusCode != 200 {
-		t.Fatalf("the status code should be [%d] but received [%d]",
-			200,
-			response.Result().StatusCode,
-		)
+	matchStatusCode(t, response.Result().StatusCode)
+
+	matchContent(t, expected, received)
+
+}
+
+func TestDeleteTask(t *testing.T) {
+
+	req, err := http.NewRequest(Delete, fmt.Sprintf("/delete/%s", testTask.ID), nil)
+
+	checkError(err)
+
+	response := httptest.NewRecorder()
+
+	tasksMap := make(types.TaskMap)
+
+	tasksMap[testTask.ID] = testTask
+
+	router := SetUpRouter(&tasksMap)
+
+	router.ServeHTTP(response, req)
+
+	received := make(types.TaskMap)
+
+	utils.JsonDecode[types.TaskMap](io.NopCloser(response.Body), &received)
+
+	expected := make(types.TaskMap)
+
+	// fmt.Println("\nResponse TaskMap:", received)
+
+	matchStatusCode(t, response.Result().StatusCode)
+
+	matchContent(t, expected, received)
+
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatalf("\nfailed to create request: %s", err.Error())
+	}
+}
+
+func matchStatusCode(t *testing.T, statusCode int, expectedStatusCode ...int) {
+
+	var expectedCode int
+
+	if len(expectedStatusCode) > 0 {
+		expectedCode = expectedStatusCode[0]
+	} else {
+		expectedCode = http.StatusOK
 	}
 
-	if received != expected {
+	if statusCode != expectedCode {
+		t.Fatalf("the status code should be [%d] but received [%d]",
+			http.StatusOK,
+			statusCode,
+		)
+	}
+}
+
+func matchContent[T any](t *testing.T, expected T, received T) {
+	if fmt.Sprint(received) != fmt.Sprint(expected) {
 
 		t.Fatalf("the response body should be [%s] but received [%s]",
 			fmt.Sprint(expected),
@@ -217,12 +243,6 @@ func TestUpdateTask(t *testing.T) {
 
 	}
 
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatalf("\nfailed to create request: %s", err.Error())
-	}
 }
 
 // func TestRouter(t *testing.T) {
