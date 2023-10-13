@@ -141,9 +141,66 @@ func TestCreateTask(t *testing.T) {
 		keys = append(keys, key)
 	}
 
+	// fmt.Println("\nKEYS: ", keys)
+	// fmt.Println("\nkeys[len(keys)-1]: ", keys[len(keys)-1])
+
 	received := responseTaskMap[keys[len(keys)-1]].TaskDetails
+
 	expected := createdTask.TaskDetails
 
+	if response.Result().StatusCode != 200 {
+		t.Fatalf("the status code should be [%d] but received [%d]",
+			200,
+			response.Result().StatusCode,
+		)
+	}
+
+	if received != expected {
+
+		t.Fatalf("the response body should be [%s] but received [%s]",
+			fmt.Sprint(expected),
+			fmt.Sprint(received),
+		)
+
+	}
+
+}
+
+func TestUpdateTask(t *testing.T) {
+
+	var reqBuffer bytes.Buffer
+
+	updatedTask := testTask
+
+	expected := "Man shall not live by bread alone, but by every word that proceedth out of the mouth of God."
+
+	updatedTask.TaskDetails = expected
+
+	utils.JsonEncode(&reqBuffer, updatedTask)
+
+	tasksMap := make(types.TaskMap)
+
+	responseTaskMap := make(types.TaskMap)
+
+	tasksMap[testTask.ID] = testTask
+
+	req, err := http.NewRequest(Put, "/update/1001", &reqBuffer)
+
+	checkError(err)
+
+	response := httptest.NewRecorder()
+
+	router := SetUpRouter(&tasksMap)
+
+	router.ServeHTTP(response, req)
+
+	utils.JsonDecode[types.TaskMap](io.NopCloser(response.Body), &responseTaskMap)
+
+	// fmt.Println("\nResponse TaskMap:", responseTaskMap["1001"].TaskDetails)
+
+	received := responseTaskMap["1001"].TaskDetails
+
+	// TODO: add if statments
 	if response.Result().StatusCode != 200 {
 		t.Fatalf("the status code should be [%d] but received [%d]",
 			200,
