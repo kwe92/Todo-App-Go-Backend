@@ -1,10 +1,8 @@
 package app_router
 
-// TODO: implement each test individually and then clean up after
-
 // TODO: add comments on Table Driven Tests and Unit Testing
 
-// TODO: Add comments to tests
+// TODO: implement all tests with t.Run to name them | Add comments to tests
 
 import (
 	"bytes"
@@ -28,37 +26,41 @@ var testTask = types.Task{
 }
 
 func TestGetTasksHandler(t *testing.T) {
+	t.Run(
+		fmt.Sprintf("GetTasks returns all tasks when endpoint %s has been requested", endpoints.GetTasks),
+		func(t *testing.T) {
+			// create request to desired endpoint
+			req, err := http.NewRequest(Get, endpoints.GetTasks, nil)
 
-	// create request to desired endpoint
-	req, err := http.NewRequest(Get, endpoints.GetTasks, nil)
+			// check if there was an error generating the request
+			checkError(err)
 
-	// check if there was an error generating the request
-	checkError(err)
+			// create a map of expected response
+			expected := make(types.TaskMap)
 
-	// create a map of expected response
-	expected := make(types.TaskMap)
+			// create a map of received response
+			received := make(types.TaskMap)
 
-	// create a map of received response
-	received := make(types.TaskMap)
+			expected[testTask.ID] = testTask
 
-	expected[testTask.ID] = testTask
+			// set up router
+			router := SetUpRouter(&expected)
 
-	// set up router
-	router := SetUpRouter(&expected)
+			// create a ResponseRecorder to act as a ResponseWriter
+			response := httptest.NewRecorder()
 
-	// create a ResponseRecorder to act as a ResponseWriter
-	response := httptest.NewRecorder()
+			// match request URL to a pattern of a registered handler and excute the handler, loading the response body
+			router.ServeHTTP(response, req)
 
-	// match request URL to a pattern of a registered handler and excute the handler, loading the response body
-	router.ServeHTTP(response, req)
+			// write the response body bytes to a GO data structure
+			utils.JsonDecode(io.NopCloser(response.Body), &received)
 
-	// write the response body bytes to a GO data structure
-	utils.JsonDecode(io.NopCloser(response.Body), &received)
+			// match status code to expected status code
+			matchStatusCode(t, response.Result().StatusCode)
 
-	// match status code to expected status code
-	matchStatusCode(t, response.Result().StatusCode)
-
-	matchContent(t, expected, received)
+			matchContent(t, expected, received)
+		},
+	)
 
 }
 
@@ -227,9 +229,10 @@ func matchStatusCode(t *testing.T, statusCode int, expectedStatusCode ...int) {
 
 	if statusCode != expectedCode {
 		t.Fatalf("the status code should be [%d] but received [%d]",
-			http.StatusOK,
+			expectedCode,
 			statusCode,
 		)
+		return
 	}
 }
 
