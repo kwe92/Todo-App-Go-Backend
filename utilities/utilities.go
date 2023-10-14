@@ -4,6 +4,7 @@ import (
 	"constants"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -27,14 +28,13 @@ func GetId() string {
 }
 
 // jsonEncode converts [data] to a JSON string and sends it over the stream as a response.
-func JsonEncode[T any](w http.ResponseWriter, data T) {
-	json.NewEncoder(w).Encode(data)
+func JsonEncode[T any](w io.Writer, data T) error {
+	return json.NewEncoder(w).Encode(data)
 }
 
-// TODO: chage to take io.ReadCloser as first argument
 // JsonDecode reads the next JSON-encoded value from its input and stores it in the value pointed to by v.
-func JsonDecode[T any](r *http.Request, ptr *T) {
-	json.NewDecoder(r.Body).Decode(&ptr)
+func JsonDecode[T any](rc io.ReadCloser, ptr *T) error {
+	return json.NewDecoder(rc).Decode(&ptr)
 }
 
 // setHeader sets up HTTP Header meta data.
