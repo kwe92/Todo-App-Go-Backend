@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
+	"testing"
 	"time"
 )
 
@@ -47,4 +49,41 @@ func SetHeader(w http.ResponseWriter) {
 // ParseURL returns the request host concatenated to the path.
 func ParseURL(r *http.Request) string {
 	return fmt.Sprintln(r.Host + r.URL.Path)
+}
+
+func CheckError(err error) {
+	if err != nil {
+		log.Fatalf("\nfailed to create request: %s", err.Error())
+	}
+}
+
+func MatchStatusCode(t *testing.T, statusCode int, expectedStatusCode ...int) {
+
+	var expectedCode int
+
+	if len(expectedStatusCode) > 0 {
+		expectedCode = expectedStatusCode[0]
+	} else {
+		expectedCode = http.StatusOK
+	}
+
+	if statusCode != expectedCode {
+		t.Fatalf("the status code should be [%d] but received [%d]",
+			expectedCode,
+			statusCode,
+		)
+		return
+	}
+}
+
+func MatchContent[T any](t *testing.T, expected T, received T) {
+	if fmt.Sprint(received) != fmt.Sprint(expected) {
+
+		t.Fatalf("the response body should be [%s] but received [%s]",
+			fmt.Sprint(expected),
+			fmt.Sprint(received),
+		)
+
+	}
+
 }
