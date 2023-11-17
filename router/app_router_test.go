@@ -55,7 +55,7 @@ func TestGetTasksHandler(t *testing.T) {
 			// match status code to expected status code
 			utils.MatchStatusCode(t, response.Result().StatusCode)
 
-			utils.MatchContent(t, expected, received)
+			utils.CompareTestResults(t, expected, received)
 		},
 	)
 
@@ -88,7 +88,7 @@ func TestGetTask(t *testing.T) {
 
 		utils.MatchStatusCode(t, response.Result().StatusCode)
 
-		utils.MatchContent(t, expected, received)
+		utils.CompareTestResults(t, expected, received)
 
 		utils.CheckError(err)
 	})
@@ -142,7 +142,7 @@ func TestCreateTask(t *testing.T) {
 
 			utils.MatchStatusCode(t, response.Result().StatusCode)
 
-			utils.MatchContent(t, expected, received)
+			utils.CompareTestResults(t, expected, received)
 		})
 
 }
@@ -185,7 +185,7 @@ func TestUpdateTask(t *testing.T) {
 
 			utils.MatchStatusCode(t, response.Result().StatusCode)
 
-			utils.MatchContent(t, expected, received)
+			utils.CompareTestResults(t, expected, received)
 		})
 
 }
@@ -218,7 +218,7 @@ func TestDeleteTask(t *testing.T) {
 
 			utils.MatchStatusCode(t, response.Result().StatusCode)
 
-			utils.MatchContent(t, expected, received)
+			utils.CompareTestResults(t, expected, received)
 		})
 
 }

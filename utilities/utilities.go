@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -48,7 +49,7 @@ func SetHeader(w http.ResponseWriter) {
 
 // ParseURL returns the request host concatenated to the path.
 func ParseURL(r *http.Request) string {
-	return fmt.Sprintln(r.Host + r.URL.Path)
+	return strings.TrimSpace(fmt.Sprintln(r.Host + r.URL.Path))
 }
 
 func CheckError(err error) {
@@ -76,10 +77,10 @@ func MatchStatusCode(t *testing.T, statusCode int, expectedStatusCode ...int) {
 	}
 }
 
-func MatchContent[T any](t *testing.T, expected T, received T) {
+func CompareTestResults[T any](t *testing.T, expected T, received T) {
 	if fmt.Sprint(received) != fmt.Sprint(expected) {
 
-		t.Fatalf("the response body should be [%s] but received [%s]",
+		t.Fatalf("expected: [%s] received: [%s]",
 			fmt.Sprint(expected),
 			fmt.Sprint(received),
 		)
